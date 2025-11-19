@@ -16,8 +16,9 @@ namespace vamroguelike
 
         public double exp { get; set; } = 0; // 현재 경험치
         public double exp_max { get; set; } = 100;
-        public int size { get; set; } = 50;
+        public int size { get; set; } = 50; //크기는 50
 
+        public char see { get; set; } // 보는곳  // 캐릭터가 지금 보고있는 방향 'w' 'a' 's' 'd'로 한다
         public User()
         {
             speed = 50; // 기본 속도 10으로 초기화

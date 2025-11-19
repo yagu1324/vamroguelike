@@ -19,9 +19,6 @@ namespace vamroguelike
         
         
         float viewx, viewy;//화면 뷰포인트 위치
-        int formsize_x=1500, formsize_y=900;//폼 사이즈
-
-        char my_see; // 캐릭터가 지금 보고있는 방향 'w' 'a' 's' 'd'로 한다
 
         System.Drawing.Image mapimage; // 맵 이미지
 
@@ -45,7 +42,22 @@ namespace vamroguelike
         System.Drawing.Image player_right_move_right_Image; // 캐릭터 오른쪽, 오른발(움직일 때) 이미지
         System.Drawing.Image player_right_move_left_Image;  // 캐릭터 오른쪽, 왼발(움직일 때) 이미지
 
-        
+
+        //몬스터 그림
+        //왼쪽
+        System.Drawing.Image zombie_left_left;
+        System.Drawing.Image zombie_left_right;
+        //밑쪽
+        System.Drawing.Image zombie_bottom_left;
+        System.Drawing.Image zombie_bottom_right;
+        //오른쪽
+        System.Drawing.Image zombie_right_left;
+        System.Drawing.Image zombie_right_right;
+        //위쪽
+        System.Drawing.Image zombie_top_left;
+        System.Drawing.Image zombie_top_right;
+
+
         public play_game()
         {
             InitializeComponent();
@@ -57,6 +69,7 @@ namespace vamroguelike
 
 
             mapimage = System.Drawing.Image.FromFile(@"image/grass.png"); // 맵이미지 초기화
+            //아바타 이미지 초기화@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             player_front_Image = System.Drawing.Image.FromFile(@"image/human_front.png");// 아바타 이미지 초기화
             player_back_Image = System.Drawing.Image.FromFile(@"image/human_back.png");// 아바타 이미지 초기화
             player_left_Image = System.Drawing.Image.FromFile(@"image/human_left.png");// 아바타 이미지 초기화
@@ -77,10 +90,26 @@ namespace vamroguelike
             player_right_move_right_Image = System.Drawing.Image.FromFile(@"image/human_right_move_right.png");
             player_right_move_left_Image = System.Drawing.Image.FromFile(@"image/human_right_move_left.png");
 
+            //좀비 이미지 초기화@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            // 좀비 정면 (아래) 애니메이션 로드
+            zombie_bottom_left = System.Drawing.Image.FromFile(@"image/zombie_bottom_left.png");
+            zombie_bottom_right = System.Drawing.Image.FromFile(@"image/zombie_bottom_right.png");
+
+            // 좀비 후면 (위) 애니메이션 로드
+            zombie_top_left = System.Drawing.Image.FromFile(@"image/zombie_top_left.png");
+            zombie_top_right = System.Drawing.Image.FromFile(@"image/zombie_top_right.png");
+
+            // 좀비 왼쪽 애니메이션 로드
+            zombie_left_left = System.Drawing.Image.FromFile(@"image/zombie_left_left.png");
+            zombie_left_right = System.Drawing.Image.FromFile(@"image/zombie_left_right.png");
+
+            // 좀비 오른쪽 애니메이션 로드
+            zombie_right_left = System.Drawing.Image.FromFile(@"image/zombie_right_left.png");
+            zombie_right_right = System.Drawing.Image.FromFile(@"image/zombie_right_right.png");
 
 
             vsf = new vam_soft(); // 게임 내부 소프트
-            this.ClientSize = new Size(formsize_x,formsize_y); //폼 크기 @@@@@
+            this.ClientSize = new Size(vsf.formsize_x,vsf.formsize_y); //폼 크기 @@@@@
 
             viewx = (float)vsf.my.x;viewy=(float)vsf.my.y; // 뷰포인트값 아바타 위치로 초기화
             
@@ -92,6 +121,7 @@ namespace vamroguelike
             // KeyPress 이벤트 핸들러를 연결합니다.
             this.KeyDown += new KeyEventHandler(this.play_game_KeyDown);
             this.KeyUp += new KeyEventHandler(this.play_game_KeyUp);
+            
 
 
 
@@ -120,7 +150,7 @@ namespace vamroguelike
                 // 🅰️ WASD 키
                 case Keys.W:
                     vsf.key[0] = true;
-                    my_see = 'w'; // 보고있는 방향을 w로
+                    vsf.my.see = 'w'; // 보고있는 방향을 w로
                     
                     if (vsf.player_move_anime_w == 0)//처음 눌렀을 때 1로 바뀌고
                     {
@@ -130,7 +160,7 @@ namespace vamroguelike
                     break;
                 case Keys.S:
                     vsf.key[2] = true;
-                    my_see = 's';// 보고있는 방향을 s로
+                    vsf.my.see = 's';// 보고있는 방향을 s로
                     if (vsf.player_move_anime_s == 0)//처음 눌렀을 때 1로 바뀌고
                     {
                         vsf.player_move_anime_s = 1;
@@ -139,7 +169,7 @@ namespace vamroguelike
                     break;
                 case Keys.A:
                     vsf.key[1] = true;
-                    my_see = 'a';// 보고있는 방향을 a로
+                    vsf.my.see = 'a';// 보고있는 방향을 a로
                     if (vsf.player_move_anime_a == 0)//처음 눌렀을 때 1로 바뀌고
                     {
                         vsf.player_move_anime_a = 1;
@@ -148,7 +178,7 @@ namespace vamroguelike
                     break;
                 case Keys.D:
                     vsf.key[3] = true;
-                    my_see = 'd';// 보고있는 방향을 d로
+                    vsf.my.see = 'd';// 보고있는 방향을 d로
                     if (vsf.player_move_anime_d == 0)//처음 눌렀을 때 1로 바뀌고
                     {
                         vsf.player_move_anime_d = 1;
@@ -163,10 +193,8 @@ namespace vamroguelike
 
             // 키 입력을 처리했으므로, 다른 컨트롤에 전달되는 것을 막습니다.
             e.Handled = true;
-
-            // 로직 변경 후 화면 갱신을 요청합니다.
-            this.Invalidate();
         }
+        
         private void play_game_KeyUp(object sender, KeyEventArgs e) // 키를 떌때
         {
             // 입력된 키에 따라 로직 클래스의 배열 값을 false로 설정합니다.
@@ -191,18 +219,38 @@ namespace vamroguelike
                 case Keys.W:
                     vsf.key[0] = false;
                     vsf.player_move_anime_w = 0;
+                    // W를 뗐을 때, 다른 키가 눌려있는지 확인
+                    if (vsf.key[3]) vsf.my.see = 'd';      // D가 눌려있다면 d를 본다
+                    else if (vsf.key[1]) vsf.my.see = 'a'; // A가 눌려있다면 a를 본다
+                    else if (vsf.key[2]) vsf.my.see = 's'; // S가 눌려있다면 s를 본다
+                                                       
                     break;
+
                 case Keys.S:
                     vsf.key[2] = false;
                     vsf.player_move_anime_s = 0;
+                    // S를 뗐을 때, 다른 키가 눌려있는지 확인
+                    if (vsf.key[3]) vsf.my.see = 'd';
+                    else if (vsf.key[1]) vsf.my.see = 'a';
+                    else if (vsf.key[0]) vsf.my.see = 'w';
                     break;
+
                 case Keys.A:
                     vsf.key[1] = false;
                     vsf.player_move_anime_a = 0;
+                    // A를 뗐을 때, 다른 키가 눌려있는지 확인
+                    if (vsf.key[0]) vsf.my.see = 'w';
+                    else if (vsf.key[2]) vsf.my.see = 's';
+                    else if (vsf.key[3]) vsf.my.see = 'd';
                     break;
+
                 case Keys.D:
                     vsf.key[3] = false;
                     vsf.player_move_anime_d = 0;
+                    // D를 뗐을 때, 다른 키가 눌려있는지 확인
+                    if (vsf.key[0]) vsf.my.see = 'w';
+                    else if (vsf.key[2]) vsf.my.see = 's';
+                    else if (vsf.key[1]) vsf.my.see = 'a';
                     break;
 
                 default:
@@ -211,9 +259,6 @@ namespace vamroguelike
 
             // 키 입력을 처리했으므로, 다른 컨트롤에 전달되는 것을 막습니다.
             e.Handled = true;
-
-            // 키를 뗀 후에도 화면 갱신이 필요할 수 있습니다.
-            this.Invalidate();
         }
 
 
@@ -228,17 +273,24 @@ namespace vamroguelike
         void view_point_check() // 뷰 포인트를 옮길 메소드 
         {
             // 아바타 위치를 중점으로 좌우 750의 길이가 0~맵크기 사이일 경우 실행
-            if (vsf.my.x - formsize_x/2 >= 0&&vsf.my.x+ formsize_x/2<=vsf.mapsize_x)
+            if (vsf.my.x - vsf.formsize_x/2 >= 0&&vsf.my.x+ vsf.formsize_x/2<=vsf.mapsize_x)
             {
-                viewx = formsize_x / 2f - (float)vsf.my.x; // 왜 이렇게 되는지는 솔직히 저도 잘 몰르겠습니다
+                viewx = vsf.formsize_x / 2f - (float)vsf.my.x; // 왜 이렇게 되는지는 솔직히 저도 잘 몰르겠습니다
                 //뷰포인트가 이렇게 본다고합니다
             }
             // 아바타 위치를 중점으로 상하 450의 길이가 0~맵크기 사이일 경우 실행
-            if (vsf.my.y - formsize_y / 2 >= 0 && vsf.my.y + formsize_y / 2 <= vsf.mapsize_y)
+            if (vsf.my.y - vsf.formsize_y / 2 >= 0 && vsf.my.y + vsf.formsize_y / 2 <= vsf.mapsize_y)
             {
-                viewy = formsize_y / 2f - (float)vsf.my.y;
+                viewy = vsf.formsize_y / 2f - (float)vsf.my.y;
             }
         }
+
+        private void play_game_Load(object sender, EventArgs e)
+        {
+
+        }
+
+
         void game_timer_Tick(object sender, EventArgs e) { //실제로 틱 마다 실행하는 코드
             vsf.play_form_soft(); // 게임 내부의 좌표들을 처리함
             view_point_check(); // 뷰포인트 확인 후 옮김
@@ -262,9 +314,65 @@ namespace vamroguelike
 
 
 
+            //적 몬스터 그리기
+            for (int i = 0; i < vsf.monsters.Count; i++)// 몬스터 수 만큼 반복
+            {
+                if (vsf.monsters[i].type == 0) //좀비
+                {
+                    if (vsf.monsters[i].see == 'w') //위쪽
+                    {
+                        if ((int)vsf.monsters[i].move_smooth_count % 2 == 0)//왼발
+                        {
+                            Console.WriteLine("그림 그리는중");
+                            g.DrawImage(zombie_top_left, (float)vsf.monsters[i].x, (float)vsf.monsters[i].y, vsf.monsters[i].size_x, vsf.monsters[i].size_y);
+                        }
+                        else//오른발
+                        {
+                            g.DrawImage(zombie_top_right, (float)vsf.monsters[i].x, (float)vsf.monsters[i].y, vsf.monsters[i].size_x, vsf.monsters[i].size_y);
+                        }
+                    }
+                    else if (vsf.monsters[i].see == 'a')//왼쪽
+                    {
+                        if ((int)vsf.monsters[i].move_smooth_count % 2 == 0)//왼발
+                        {
+                            g.DrawImage(zombie_left_left, (float)vsf.monsters[i].x, (float)vsf.monsters[i].y, vsf.monsters[i].size_x, vsf.monsters[i].size_y);
+                        }
+                        else//오른발
+                        {
+                            g.DrawImage(zombie_left_right, (float)vsf.monsters[i].x, (float)vsf.monsters[i].y, vsf.monsters[i].size_x, vsf.monsters[i].size_y);
+                        }
+                    }
+                    else if (vsf.monsters[i].see == 's')//밑쪽
+                    {
+                        if ((int)vsf.monsters[i].move_smooth_count % 2 == 0)//왼발
+                        {
+                            g.DrawImage(zombie_bottom_left, (float)vsf.monsters[i].x, (float)vsf.monsters[i].y, vsf.monsters[i].size_x, vsf.monsters[i].size_y);
+                        }
+                        else//오른발
+                        {
+                            g.DrawImage(zombie_bottom_right, (float)vsf.monsters[i].x, (float)vsf.monsters[i].y, vsf.monsters[i].size_x, vsf.monsters[i].size_y);
+                        }
+                    }
+                    else//오른쪽
+                    {
+                        if ((int)vsf.monsters[i].move_smooth_count % 2 == 0)//왼발
+                        {
+                            g.DrawImage(zombie_right_left, (float)vsf.monsters[i].x, (float)vsf.monsters[i].y, vsf.monsters[i].size_x, vsf.monsters[i].size_y);
+                        }
+                        else//오른발
+                        {
+                            g.DrawImage(zombie_right_right, (float)vsf.monsters[i].x, (float)vsf.monsters[i].y, vsf.monsters[i].size_x, vsf.monsters[i].size_y);
+                        }
+                    }
+                }
+                else if (vsf.monsters[i].type == 1) //다른 몬스터들 추가 예정
+                {
 
-            //캐릭터 움직이기
-            if (my_see == 'w')
+                }
+            }
+
+            //캐릭터 움직이는거 그리기
+            if (vsf.my.see == 'w')
             {
                 // W (후면) 방향
                 if ((int)vsf.player_move_anime_w == 0)
@@ -282,7 +390,7 @@ namespace vamroguelike
                     g.DrawImage(player_back_move_right_Image, (float)vsf.my.x, (float)vsf.my.y, vsf.my.size, vsf.my.size);
                 }
             }
-            else if (my_see == 'a')
+            else if (vsf.my.see == 'a')
             {
                 // A (왼쪽) 방향
                 // 애니메이션 카운터 변수는 'vsf.player_move_anime_a'라고 가정
@@ -301,7 +409,7 @@ namespace vamroguelike
                     g.DrawImage(player_left_move_right_Image, (float)vsf.my.x, (float)vsf.my.y, vsf.my.size, vsf.my.size);
                 }
             }
-            else if (my_see == 'd')
+            else if (vsf.my.see == 'd')
             {
                 // D (오른쪽) 방향
                 // 애니메이션 카운터 변수는 'vsf.player_move_anime_d'라고 가정
@@ -320,7 +428,7 @@ namespace vamroguelike
                     g.DrawImage(player_right_move_right_Image, (float)vsf.my.x, (float)vsf.my.y, vsf.my.size, vsf.my.size);
                 }
             }
-            else // my_see == 's' (정면 또는 기본)
+            else // vsf.my.see == 's' (정면 또는 기본)
             {
                 // S (정면) 방향
                 // 애니메이션 카운터 변수는 'vsf.player_move_anime_s'라고 가정
@@ -339,6 +447,12 @@ namespace vamroguelike
                     g.DrawImage(player_front_move_right_Image, (float)vsf.my.x, (float)vsf.my.y, vsf.my.size, vsf.my.size);
                 }
             }
+
+
+            //아이템들 그리기
+
+
+
 
         }
     }
