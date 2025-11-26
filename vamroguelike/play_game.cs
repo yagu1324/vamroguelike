@@ -57,6 +57,24 @@ namespace vamroguelike
         System.Drawing.Image zombie_top_left;
         System.Drawing.Image zombie_top_right;
 
+        //공격 slash
+        System.Drawing.Image[] attack_left_slash=new System.Drawing.Image[9];
+        System.Drawing.Image[] attack_right_slash = new System.Drawing.Image[9];
+        System.Drawing.Image[] attack_top_slash = new System.Drawing.Image[9];
+        System.Drawing.Image[] attack_bottom_slash = new System.Drawing.Image[9];
+
+        //드랍 아이템
+        //경험치
+        System.Drawing.Image green_gem;
+        System.Drawing.Image blue_gem;
+        System.Drawing.Image purple_gem;
+        System.Drawing.Image magnet;
+        System.Drawing.Image heal;
+        System.Drawing.Image bomb;
+
+
+        List<int> atk_delete_num;//Attack_list를 삭제하기위해 index 값을 저장할 list
+        double anime_tick; //애니메이션 스프라이트를 자연스럽게 하기위한 tick 필드
 
         public play_game()
         {
@@ -107,13 +125,49 @@ namespace vamroguelike
             zombie_right_left = System.Drawing.Image.FromFile(@"image/zombie_right_left.png");
             zombie_right_right = System.Drawing.Image.FromFile(@"image/zombie_right_right.png");
 
+            //slash 이미지 초기화
+            for(int i = 0; i < 9; i++)
+            {
+                string filePath = $@"image/attack_bottom_{i+1}.png";
+                System.Drawing.Image frame = System.Drawing.Image.FromFile(filePath);
+                attack_bottom_slash[i] = frame;
+            }
+            for (int i = 0; i < 9; i++)
+            {
+                string filePath = $@"image/attack_left_{i + 1}.png";
+                System.Drawing.Image frame = System.Drawing.Image.FromFile(filePath);
+                attack_left_slash[i] = frame;
+            }
+            for (int i = 0; i < 9; i++)
+            {
+                string filePath = $@"image/attack_right_{i + 1}.png";
+                System.Drawing.Image frame = System.Drawing.Image.FromFile(filePath);
+                attack_right_slash[i] = frame;
+            }
+            for (int i = 0; i < 9; i++)
+            {
+                string filePath = $@"image/attack_top_{i + 1}.png";
+                System.Drawing.Image frame = System.Drawing.Image.FromFile(filePath);
+                attack_top_slash[i] = frame;
+            }
+
+            //드랍 아이템들
+            //경험치
+            green_gem = System.Drawing.Image.FromFile(@"image/green_gem.png");
+            blue_gem = System.Drawing.Image.FromFile(@"image/blue_gem.png");
+            purple_gem = System.Drawing.Image.FromFile(@"image/purple_gem.png");
+            //드랍 아이템
+            magnet = System.Drawing.Image.FromFile(@"image/magnet.png");
+            heal = System.Drawing.Image.FromFile(@"image/heal.png");
+            bomb = System.Drawing.Image.FromFile(@"image/bomb.png");
 
             vsf = new vam_soft(); // 게임 내부 소프트
+            anime_tick = 1.0/vsf.fps;// anime_tick 애니메이션 스프라이트를 위해 필욯마
             this.ClientSize = new Size(vsf.formsize_x,vsf.formsize_y); //폼 크기 @@@@@
 
             viewx = (float)vsf.my.x;viewy=(float)vsf.my.y; // 뷰포인트값 아바타 위치로 초기화
-            
-            
+
+            atk_delete_num = new List<int>(); // atk 부분 삭제하기 위해서
 
             // 이 속성이 False이면, 폼 위에 TextBox 같은 컨트롤이 있을 때 폼은 키 입력을 받지 못합니다.
             this.KeyPreview = true;
@@ -136,15 +190,20 @@ namespace vamroguelike
                 // ➡️ 방향키 (Arrows)
                 case Keys.Up:
                     vsf.key[4] = true;
+                    
                     break;
                 case Keys.Down:
+                    //키를 누르면 다른 키들은 비활성화( 상하좌우만 공격 가능 하게 하기 위해서)
                     vsf.key[6] = true;
+                    
                     break;
                 case Keys.Left:
                     vsf.key[5] = true;
+                   
                     break;
                 case Keys.Right:
                     vsf.key[7] = true;
+                   
                     break;
 
                 // 🅰️ WASD 키
@@ -203,7 +262,6 @@ namespace vamroguelike
                 // ➡️ 방향키 (Arrows)
                 case Keys.Up:
                     vsf.key[4] = false;
-                    
                     break;
                 case Keys.Down:
                     vsf.key[6] = false;
@@ -309,11 +367,18 @@ namespace vamroguelike
             g.TranslateTransform(viewx, viewy);// 뷰포인트 옮기기
 
 
-            g.DrawImage(mapimage,0, 0, vsf.mapsize_x, vsf.mapsize_y);//맵의 크기는 0~mapsize(5000) 까지 그림
+            g.DrawImage(mapimage, 0, 0, vsf.mapsize_x, vsf.mapsize_y);//맵의 크기는 0~mapsize(5000) 까지 그림
 
 
 
+            try
+            {
 
+            }
+            catch (Exception)
+            {
+
+            }
             //적 몬스터 그리기
             for (int i = 0; i < vsf.monsters.Count; i++)// 몬스터 수 만큼 반복
             {
@@ -323,7 +388,6 @@ namespace vamroguelike
                     {
                         if ((int)vsf.monsters[i].move_smooth_count % 2 == 0)//왼발
                         {
-                            Console.WriteLine("그림 그리는중");
                             g.DrawImage(zombie_top_left, (float)vsf.monsters[i].x, (float)vsf.monsters[i].y, vsf.monsters[i].size_x, vsf.monsters[i].size_y);
                         }
                         else//오른발
@@ -370,6 +434,155 @@ namespace vamroguelike
 
                 }
             }
+
+            //무기 이펙트 그리기
+            float correction;//이미지가 좀 한쪽으로 커서 보정값
+            float draw_plus_image_size; //size 보다 그림이 이상하게보여서 그림을 키울 생각입니다
+
+            for (int i = vsf.Attack.Count - 1; i >= 0; i--)
+            {
+                correction = (float)vsf.Attack[i].size / 10;//이미지가 좀 한쪽으로 커서 보정값
+                //이 배율에 따라 그림이 더 커집니다
+                draw_plus_image_size = (float)vsf.Attack[i].size * 0.4f;//size 보다 그림이 이상하게보여서 그림을 키울 생각입니다
+                if (vsf.Attack[i].see == 'w') // 위쪽
+                {
+                    // 1. 시간 흐르게 하기
+                    vsf.Attack[i].anime_dur_count += anime_tick;
+
+                    // 2. 한 프레임당 걸려야 하는 시간 계산
+                    double timePerFrame = vsf.Attack[i].anime_dur / (double)attack_top_slash.Length;
+
+                    // 3. 시간이 되었으면 다음 프레임으로
+                    if (vsf.Attack[i].anime_dur_count >= timePerFrame)
+                    {
+                        vsf.Attack[i].sprite_count++; // 1장씩 부드럽게 넘어감
+
+                        // 0으로 초기화하지 않고 뺍니다 
+                        vsf.Attack[i].anime_dur_count -= timePerFrame;
+                    }
+
+                    // 4. 배열 범위를 넘었는지 확인 (삭제 처리)
+                    if (vsf.Attack[i].sprite_count >= attack_top_slash.Length)
+                    {
+                        atk_delete_num.Add(i); // 삭제 리스트에 추가
+                    }
+                    else
+                    {
+                        // 5. 그리기 (삭제될 상황이 아닐 때만 그림)
+                        // 좌표는 원래 주신대로 (x, y) 그대로 사용
+                        g.DrawImage(attack_top_slash[vsf.Attack[i].sprite_count],
+                            (float)vsf.Attack[i].x + correction - draw_plus_image_size / 2,
+                            (float)vsf.Attack[i].y - draw_plus_image_size / 2,
+                            (float)vsf.Attack[i].size + draw_plus_image_size,
+                            (float)vsf.Attack[i].size + draw_plus_image_size);
+                    }
+                }
+                else if (vsf.Attack[i].see == 'a')//왼
+                {
+                    // 1. 시간 흐르게 하기
+                    vsf.Attack[i].anime_dur_count += anime_tick;
+
+                    // 2. 한 프레임당 걸려야 하는 시간 계산
+                    double timePerFrame = vsf.Attack[i].anime_dur / (double)attack_top_slash.Length;
+
+                    // 3. 시간이 되었으면 다음 프레임으로
+                    if (vsf.Attack[i].anime_dur_count >= timePerFrame)
+                    {
+                        vsf.Attack[i].sprite_count++; // 1장씩 부드럽게 넘어감 (기존 += 2 삭제)
+
+                        // ★ 중요: 0으로 초기화하지 않고 뺍니다 (시간 오차 누적 방지 -> 끊김 해결)
+                        vsf.Attack[i].anime_dur_count -= timePerFrame;
+                    }
+
+                    // 4. 배열 범위를 넘었는지 확인 (삭제 처리)
+                    if (vsf.Attack[i].sprite_count >= attack_top_slash.Length)
+                    {
+                        atk_delete_num.Add(i); // 삭제 리스트에 추가
+                    }
+                    else
+                    {
+                        // 5. 그리기 (삭제될 상황이 아닐 때만 그림)
+                        // 좌표는 원래 주신대로 (x, y) 그대로 사용
+                        g.DrawImage(attack_left_slash[vsf.Attack[i].sprite_count],
+                            (float)vsf.Attack[i].x - draw_plus_image_size / 2,
+                            (float)vsf.Attack[i].y - correction - draw_plus_image_size / 2,
+                            (float)vsf.Attack[i].size + draw_plus_image_size,
+                            (float)vsf.Attack[i].size + draw_plus_image_size);
+                    }
+                }
+                else if (vsf.Attack[i].see == 's')//밑
+                {
+                    // 1. 시간 흐르게 하기
+                    vsf.Attack[i].anime_dur_count += anime_tick;
+
+                    // 2. 한 프레임당 걸려야 하는 시간 계산
+                    double timePerFrame = vsf.Attack[i].anime_dur / (double)attack_top_slash.Length;//애니메이션 최대시간/애니메이션 스프라이트 갯수 = 한스프라이트당 지속되야할 시간
+
+                    // 3. 시간이 되었으면 다음 프레임으로
+                    if (vsf.Attack[i].anime_dur_count >= timePerFrame)
+                    {
+                        vsf.Attack[i].sprite_count++; // 1장씩 부드럽게 넘어감 (기존 += 2 삭제)
+
+                        // ★ 중요: 0으로 초기화하지 않고 뺍니다 (시간 오차 누적 방지 -> 끊김 해결)
+                        vsf.Attack[i].anime_dur_count -= timePerFrame;
+                    }
+
+                    // 4. 배열 범위를 넘었는지 확인 (삭제 처리)
+                    if (vsf.Attack[i].sprite_count >= attack_top_slash.Length)
+                    {
+                        atk_delete_num.Add(i); // 삭제 리스트에 추가
+                    }
+                    else
+                    {
+                        // 5. 그리기 (삭제될 상황이 아닐 때만 그림)
+                        // 좌표는 원래 주신대로 (x, y) 그대로 사용
+                        g.DrawImage(attack_bottom_slash[vsf.Attack[i].sprite_count],
+                            (float)vsf.Attack[i].x - correction - draw_plus_image_size / 2,
+                            (float)vsf.Attack[i].y - draw_plus_image_size / 2,
+                            (float)vsf.Attack[i].size + draw_plus_image_size,
+                            (float)vsf.Attack[i].size + draw_plus_image_size);
+                    }
+                }
+                else if (vsf.Attack[i].see == 'd')//우
+                {
+                    // 1. 시간 흐르게 하기
+                    vsf.Attack[i].anime_dur_count += anime_tick;
+
+                    // 2. 한 프레임당 걸려야 하는 시간 계산
+                    double timePerFrame = vsf.Attack[i].anime_dur / (double)attack_top_slash.Length;
+
+                    // 3. 시간이 되었으면 다음 프레임으로
+                    if (vsf.Attack[i].anime_dur_count >= timePerFrame)
+                    {
+                        vsf.Attack[i].sprite_count++; // 1장씩 부드럽게 넘어감 (기존 += 2 삭제)
+
+                        // ★ 중요: 0으로 초기화하지 않고 뺍니다 (시간 오차 누적 방지 -> 끊김 해결)
+                        vsf.Attack[i].anime_dur_count -= timePerFrame;
+                    }
+
+                    // 4. 배열 범위를 넘었는지 확인 (삭제 처리)
+                    if (vsf.Attack[i].sprite_count >= attack_top_slash.Length)
+                    {
+                        atk_delete_num.Add(i); // 삭제 리스트에 추가
+                    }
+                    else
+                    {
+                        // 5. 그리기 (삭제될 상황이 아닐 때만 그림)
+                        // 좌표는 원래 주신대로 (x, y) 그대로 사용
+                        g.DrawImage(attack_right_slash[vsf.Attack[i].sprite_count],
+                            (float)vsf.Attack[i].x - draw_plus_image_size / 2,
+                            (float)vsf.Attack[i].y + correction - draw_plus_image_size / 2,
+                            (float)vsf.Attack[i].size + draw_plus_image_size,
+                            (float)vsf.Attack[i].size + draw_plus_image_size);
+                    }
+                }
+            }
+            for (int i = 0; i < atk_delete_num.Count; i++) //삭제
+            {
+                vsf.Attack.RemoveAt(atk_delete_num[i]);
+            }
+            atk_delete_num.Clear();//쓰레기통 비우기
+
 
             //캐릭터 움직이는거 그리기
             if (vsf.my.see == 'w')
@@ -451,9 +664,63 @@ namespace vamroguelike
 
             //아이템들 그리기
 
-
-
-
+            for (int i = 0; i < vsf.item.Count; i++)
+            {
+                
+                if (vsf.item[i].type == 3) //초록 경험치
+                {
+                    g.DrawImage(green_gem, (float)vsf.item[i].x, (float)vsf.item[i].y,(float) vsf.item[i].size, (float)vsf.item[i].size);
+                }
+                else if (vsf.item[i].type == 4) //파랑 경험치
+                {
+                    g.DrawImage(blue_gem, (float)vsf.item[i].x, (float)vsf.item[i].y, (float)vsf.item[i].size, (float)vsf.item[i].size);
+                }
+                else if (vsf.item[i].type == 5) //보라 경험치
+                {
+                    g.DrawImage(purple_gem, (float)vsf.item[i].x, (float)vsf.item[i].y, (float)vsf.item[i].size, (float)vsf.item[i].size);
+                }
+                else if(vsf.item[i].type == 1) //자석
+                {
+                    g.DrawImage(magnet, (float)vsf.item[i].x, (float)vsf.item[i].y, (float)vsf.item[i].size, (float)vsf.item[i].size);
+                }
+                else if (vsf.item[i].type == 0) //회복약
+                {
+                    g.DrawImage(heal, (float)vsf.item[i].x, (float)vsf.item[i].y, (float)vsf.item[i].size, (float)vsf.item[i].size);
+                }
+                else if (vsf.item[i].type == 2) //폭탄
+                {
+                    g.DrawImage(bomb, (float)vsf.item[i].x, (float)vsf.item[i].y, (float)vsf.item[i].size, (float)vsf.item[i].size);
+                }
+            }
+            // 먹는 아이템
+            for(int i = 0; i < vsf.eat.Count; i++)
+            {
+                if (vsf.eat[i].type == 3) //초록 경험치
+                {
+                    g.DrawImage(green_gem, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
+                }
+                else if (vsf.eat[i].type == 4) //파랑 경험치
+                {
+                    g.DrawImage(blue_gem, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
+                }
+                else if (vsf.eat[i].type == 5) //보라 경험치
+                {
+                    g.DrawImage(purple_gem, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
+                }
+                else if (vsf.eat[i].type == 1) //자석
+                {
+                    g.DrawImage(magnet, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
+                }
+                else if (vsf.eat[i].type == 0) //회복약
+                {
+                    g.DrawImage(heal, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
+                }
+                else if (vsf.eat[i].type == 2) //폭탄
+                {
+                    g.DrawImage(bomb, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
+                }
+            }
         }
+
     }
 }
