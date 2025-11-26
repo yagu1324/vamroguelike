@@ -46,24 +46,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="bin\Debug\Mob.cs" />
-    <Compile Include="bin\Debug\Monster.cs" />
-    <Compile Include="bin\Debug\play_game.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="bin\Debug\play_game.Designer.cs">
-      <DependentUpon>play_game.cs</DependentUpon>
-    </Compile>
-    <Compile Include="bin\Debug\Program.cs" />
-    <Compile Include="bin\Debug\User.cs" />
-    <Compile Include="bin\Debug\vam_soft.cs" />
-    <Compile Include="bin\Debug\Weapons.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="Monster.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-    <Compile Include="obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
-    <Compile Include="obj\Release\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
     <Compile Include="play_game.cs">
       <SubType>Form</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -94,11 +80,6 @@
     <Compile Include="Weapons.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-    <EmbeddedResource Include="bin\Debug\play_game.resx">
-      <DependentUpon>play_game.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="obj\Debug\vamroguelike.play_game.resources" />
-    <EmbeddedResource Include="obj\Debug\vamroguelike.Properties.Resources.resources" />
     <EmbeddedResource Include="play_game.resx">
       <DependentUpon>play_game.cs</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -112,25 +93,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include=".vs\slnx.sqlite" />
-    <None Include=".vs\vamroguelike.csproj.dtbcache.json" />
-    <None Include=".vs\vamroguelike\CopilotIndices\17.13.433.20974\CodeChunks.db" />
-    <None Include=".vs\vamroguelike\CopilotIndices\17.13.433.20974\SemanticSymbols.db" />
-    <None Include=".vs\vamroguelike\FileContentIndex\1320b316-0ec4-4820-9915-6a0ee4f939e7.vsidx" />
-    <None Include=".vs\vamroguelike\FileContentIndex\9f6a0055-b393-4bdc-b1fe-2fd8af58b377.vsidx" />
-    <None Include=".vs\vamroguelike\FileContentIndex\c4513c9b-f202-49a8-a580-3f67af43c399.vsidx" />
-    <None Include=".vs\vamroguelike\v17\DocumentLayout.backup.json" />
-    <None Include=".vs\vamroguelike\v17\DocumentLayout.json" />
-    <None Include=".vs\VSWorkspaceState.json" />
-    <None Include="bin\Debug\App.config" />
-    <None Include="bin\Debug\vamroguelike.exe.config" />
-    <None Include="obj\Debug\DesignTimeResolveAssemblyReferences.cache" />
-    <None Include="obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
-    <None Include="obj\Debug\vamroguelike.csproj.AssemblyReference.cache" />
-    <None Include="obj\Debug\vamroguelike.csproj.CoreCompileInputs.cache" />
-    <None Include="obj\Debug\vamroguelike.csproj.GenerateResource.cache" />
-    <None Include="obj\Debug\vamroguelike.exe.config" />
-    <None Include="obj\Release\vamroguelike.csproj.AssemblyReference.cache" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -147,71 +109,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\Debug\image\attack_bottom_1.png" />
-    <Content Include="bin\Debug\image\attack_bottom_2.png" />
-    <Content Include="bin\Debug\image\attack_bottom_3.png" />
-    <Content Include="bin\Debug\image\attack_bottom_4.png" />
-    <Content Include="bin\Debug\image\attack_bottom_5.png" />
-    <Content Include="bin\Debug\image\attack_bottom_6.png" />
-    <Content Include="bin\Debug\image\attack_bottom_7.png" />
-    <Content Include="bin\Debug\image\attack_bottom_8.png" />
-    <Content Include="bin\Debug\image\attack_bottom_9.png" />
-    <Content Include="bin\Debug\image\attack_left_1.png" />
-    <Content Include="bin\Debug\image\attack_left_2.png" />
-    <Content Include="bin\Debug\image\attack_left_3.png" />
-    <Content Include="bin\Debug\image\attack_left_4.png" />
-    <Content Include="bin\Debug\image\attack_left_5.png" />
-    <Content Include="bin\Debug\image\attack_left_6.png" />
-    <Content Include="bin\Debug\image\attack_left_7.png" />
-    <Content Include="bin\Debug\image\attack_left_8.png" />
-    <Content Include="bin\Debug\image\attack_left_9.png" />
-    <Content Include="bin\Debug\image\attack_right_1.png" />
-    <Content Include="bin\Debug\image\attack_right_2.png" />
-    <Content Include="bin\Debug\image\attack_right_3.png" />
-    <Content Include="bin\Debug\image\attack_right_4.png" />
-    <Content Include="bin\Debug\image\attack_right_5.png" />
-    <Content Include="bin\Debug\image\attack_right_6.png" />
-    <Content Include="bin\Debug\image\attack_right_7.png" />
-    <Content Include="bin\Debug\image\attack_right_8.png" />
-    <Content Include="bin\Debug\image\attack_right_9.png" />
-    <Content Include="bin\Debug\image\attack_top_1.png" />
-    <Content Include="bin\Debug\image\attack_top_2.png" />
-    <Content Include="bin\Debug\image\attack_top_3.png" />
-    <Content Include="bin\Debug\image\attack_top_4.png" />
-    <Content Include="bin\Debug\image\attack_top_5.png" />
-    <Content Include="bin\Debug\image\attack_top_6.png" />
-    <Content Include="bin\Debug\image\attack_top_7.png" />
-    <Content Include="bin\Debug\image\attack_top_8.png" />
-    <Content Include="bin\Debug\image\attack_top_9.png" />
-    <Content Include="bin\Debug\image\blue_gem.png" />
-    <Content Include="bin\Debug\image\bomb.png" />
-    <Content Include="bin\Debug\image\grass.png" />
-    <Content Include="bin\Debug\image\green_gem.png" />
-    <Content Include="bin\Debug\image\heal.png" />
-    <Content Include="bin\Debug\image\human_back.png" />
-    <Content Include="bin\Debug\image\human_back_move_left.png" />
-    <Content Include="bin\Debug\image\human_back_move_right.png" />
-    <Content Include="bin\Debug\image\human_front.png" />
-    <Content Include="bin\Debug\image\human_front_move_left.png" />
-    <Content Include="bin\Debug\image\human_front_move_right.png" />
-    <Content Include="bin\Debug\image\human_left.png" />
-    <Content Include="bin\Debug\image\human_left_move_left.png" />
-    <Content Include="bin\Debug\image\human_left_move_right.png" />
-    <Content Include="bin\Debug\image\human_right.png" />
-    <Content Include="bin\Debug\image\human_right_move_left.png" />
-    <Content Include="bin\Debug\image\human_right_move_right.png" />
-    <Content Include="bin\Debug\image\magnet.png" />
-    <Content Include="bin\Debug\image\purple_gem.png" />
-    <Content Include="bin\Debug\image\zombie_bottom_left.png" />
-    <Content Include="bin\Debug\image\zombie_bottom_right.png" />
-    <Content Include="bin\Debug\image\zombie_left_left.png" />
-    <Content Include="bin\Debug\image\zombie_left_right.png" />
-    <Content Include="bin\Debug\image\zombie_right_left.png" />
-    <Content Include="bin\Debug\image\zombie_right_right.png" />
-    <Content Include="bin\Debug\image\zombie_top_left.png" />
-    <Content Include="bin\Debug\image\zombie_top_right.png" />
-    <Content Include="bin\Debug\vamroguelike.exe" />
-    <Content Include="bin\Debug\vamroguelike.pdb" />
     <Content Include="image\attack_bottom_1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -401,13 +298,7 @@
     <Content Include="image\zombie_top_right.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="obj\Debug\vamroguelike.csproj.FileListAbsolute.txt" />
-    <Content Include="obj\Debug\vamroguelike.exe" />
-    <Content Include="obj\Debug\vamroguelike.pdb" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="bin\Release\" />
-    <Folder Include="obj\Debug\TempPE\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
