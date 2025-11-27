@@ -59,7 +59,7 @@ namespace vamroguelike
 
         public void key_check()
         {
-            my.damage_delay_count += 1.0 / fps;//공격 싸이클 계산하기
+            my.damage_delay_count += my.damage_delay / fps;//초당 이만큼 때린다는뜻
             //이동 속도는 speed/fps = 1초당 speed만큼 움직인다는 뜻
             
             if (key[0]) //w를 눌렀을 때
@@ -110,7 +110,7 @@ namespace vamroguelike
                     player_move_anime_d += my.speed / (fps * move_smooth); //애니메이션 카운터
                 }
             }
-            if (my.damage_delay <= my.damage_delay_count) // 공속제한
+            if (1 <= my.damage_delay_count) // 공속제한
             {
                 // [1] 위 (Up) 공격
                 if (key[4])

@@ -10,7 +10,7 @@ namespace vamroguelike
     {
         public Weapons w { get; set; } // 무기
 
-        public double damage_delay { get; set; } = 0.1;//공속 //기본 공속 1
+        public double damage_delay { get; set; } = 10;//공속 //기본 공속 1
         public double damage_delay_count { get; set; } = 0;//공속 체크할 카운트
         public int Lv { get; set; } = 1; //레벨
 

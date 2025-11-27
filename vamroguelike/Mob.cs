@@ -18,5 +18,7 @@ namespace vamroguelike
         public double speed { get; set; }//움직일 속도
         public double damage { get; set; }//공격력
 
+        public double shield { get; set; } = 0;//방어력
+
     }
 }
