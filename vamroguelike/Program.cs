@@ -20,7 +20,7 @@ namespace vamroguelike
             AllocConsole();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Select_ability());
+            Application.Run(new play_game());
         }
     }
 }

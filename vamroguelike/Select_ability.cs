@@ -23,6 +23,7 @@ namespace vamroguelike
         public Select_ability()
         {
             InitializeComponent();
+            this.ControlBox = false; //닫기 버튼 비활성화
         }
 
         // [1] 폼이 켜질 때 실행 (Load)
@@ -203,7 +204,7 @@ namespace vamroguelike
                 this.add_value = save_values[slotIndex];   // 수치
 
                 // 3. 닫기 (성공)
-                this.DialogResult = DialogResult.OK;
+                this.DialogResult = DialogResult.OK;// 제대로 선택했으니 ok를 준다!
                 this.Close();
             }
         }

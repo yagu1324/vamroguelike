@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Drawing;
+using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 
 namespace vamroguelike
 {
     class vam_soft
     {
-        public bool[] key = new bool[8]; // 키보드 입력 0=w 1=a  2=s 3=d   4=위 5=왼 6=아래 7=오른
+        public double timer { get; set; } // 게임타이머
+        public bool game_stop { get; set; } //게임멈출 함수
+        public bool[] key = new bool[9]; // 키보드 입력 0=w 1=a  2=s 3=d   4=위 5=왼 6=아래 7=오른 8=p (pause) 능력치 보는거
         int f = 2; // 1=메인화면, 2=플레이 화면
         play_game play;
         public User my;
@@ -24,8 +27,8 @@ namespace vamroguelike
         public int mapsize_y { get; set; } = 3000;
 
         // 폼
-        public int formsize_x { get; set; } = 700;
-        public int formsize_y { get; set; } = 500;
+        public int formsize_x { get; set; } = 1500;
+        public int formsize_y { get; set; } = 900;
 
         public List<Monster> monsters { get; set; } // 소환된 몬스터를 담을 곳 // 소환된 몬스터를 담을 곳
         public List<Weapons> Attack { get; set; }//공격시 여기에 생김
@@ -49,8 +52,10 @@ namespace vamroguelike
             Attack = new List<Weapons>();
             item = new List<Item>();
             eat = new List<Item>();
+            timer = 0;
 
             my.x = mapsize_x/2;my.y = mapsize_y/2; // 아바타의 위치는 항상 맵의 정중앙에서 시작한다
+
 
 
             play_form_soft();//실제 게임 소프트
@@ -465,15 +470,15 @@ namespace vamroguelike
                     }
                     else if(eat[i].type == 3)//경험치
                     {
-                        my.exp += 1; //경험치 1획득
+                        my.exp += 1*(1+my.exp_plus); //경험치 1획득  (exp_plus의 배율에 따라 경험치를 더 휙득한다)
                     }
                     else if(eat[i].type == 4)//경험치 블루 
                     {
-                        my.exp += 5; //경험치 5획득
+                        my.exp += 5 * (1 + my.exp_plus); //경험치 5획득
                     }
                     else if(item[i].type == 5)//경험치 퍼플
                     {
-                        my.exp += 20; //경험치 20획득
+                        my.exp += 20 * (1 + my.exp_plus); //경험치 20획득
                     }
                     // 여기에 실제 아이템 효과 적용 코드 추가
                     eat.RemoveAt(i);
@@ -493,10 +498,60 @@ namespace vamroguelike
             //경험치가 최대 경험치를 넘었을 때 레벨업
             if (my.exp >= my.exp_max)
             {
+                game_stop=true; // 게임을 멈춤!
                 my.exp -= my.exp_max; //남은 경험치는 다음 레벨로 넘긴다
                 my.Lv += 1; //레벨업
                 my.exp_max = (int)(my.exp_max * 1.2); //다음 레벨 최대 경험치 증가
-                
+
+                //랜덤 능력치 고름!
+                Select_ability abilityForm = new Select_ability();
+                //0.공격력 1.최대체력 2.공격속도 3.방어력 4.무기크기 5.이동속도 6.경험치획득량
+                int select_ability=-1; //선택한 능력 번호
+                double value=0; // 적용할 능력 값
+
+                if (abilityForm.ShowDialog() == DialogResult.OK) //제대로 클릭했으면 ok / 만약 그냥 창을 끄면 그대로 넘어감(이거 안하면 오류남)
+                {
+                    // 폼에서 선택한 값 꺼내오기
+                    select_ability = abilityForm.select_num;
+                    value = abilityForm.add_value;
+                }
+                abilityForm.Dispose(); // 윈폼 할당 제거
+
+                if (select_ability == 0)
+                {//공격력
+                    my.damage += value;
+                }
+                else if (select_ability == 1) //최대체력
+                {
+                    my.hp += value;
+                }
+                else if(select_ability == 2)//공격속도
+                {
+                    my.damage_delay += value;
+                }
+                else if( select_ability == 3)//방어력
+                {
+                    my.shield += value;
+                }
+                else if (select_ability == 4)//무기 크기
+                {
+                    my.weapons.size *= (1 + value);// 무기 크기 배율로 증가
+                }
+                else if (select_ability == 5)//이동속도
+                {
+                    my.speed+= value;
+                }
+                else if (select_ability == 6)//경험치 획득량
+                {
+                    my.exp_plus += value/100;
+                }
+                //이걸해야 윈폼 다른 창이 켜졌을 때 키나 눌려져있는 현상이 사라진다
+                for(int i = 0; i < 9; i++)
+                {
+                    key[i]=false; //키 초기화
+                }
+
+                game_stop = false; //게임 멈춤을 끔
             }
         }
         public void play_form_soft()//실제 실행될 게임 메소드
@@ -505,7 +560,9 @@ namespace vamroguelike
            monster_move();
            monster_crash_check();
            item_eat();
+           level_up();
            key_check();
+           timer += 1.5 / fps;// 게임 시간 저장 (1.0으로 하니까 느림
         }
         
     }
