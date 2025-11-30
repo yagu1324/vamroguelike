@@ -244,6 +244,9 @@ namespace vamroguelike
                     }
                    
                     break;
+                case Keys.P:
+                    vsf.key[8] = true;
+                    break;
 
                 default:
                     // 다른 키 입력은 무시
@@ -309,6 +312,10 @@ namespace vamroguelike
                     if (vsf.key[0]) vsf.my.see = 'w';
                     else if (vsf.key[2]) vsf.my.see = 's';
                     else if (vsf.key[1]) vsf.my.see = 'a';
+                    break;
+
+                case Keys.P:
+                    vsf.key[8] = false;
                     break;
 
                 default:
@@ -578,6 +585,83 @@ namespace vamroguelike
             atk_delete_num.Clear();//쓰레기통 비우기
 
 
+
+
+
+
+
+
+
+
+
+
+
+            //아이템들 그리기
+            for (int i = 0; i < vsf.item.Count; i++)
+            {
+
+                if (vsf.item[i].type == 3) //초록 경험치
+                {
+                    g.DrawImage(green_gem, (float)vsf.item[i].x, (float)vsf.item[i].y, (float)vsf.item[i].size, (float)vsf.item[i].size);
+                }
+                else if (vsf.item[i].type == 4) //파랑 경험치
+                {
+                    g.DrawImage(blue_gem, (float)vsf.item[i].x, (float)vsf.item[i].y, (float)vsf.item[i].size, (float)vsf.item[i].size);
+                }
+                else if (vsf.item[i].type == 5) //보라 경험치
+                {
+                    g.DrawImage(purple_gem, (float)vsf.item[i].x, (float)vsf.item[i].y, (float)vsf.item[i].size, (float)vsf.item[i].size);
+                }
+                else if (vsf.item[i].type == 1) //자석
+                {
+                    g.DrawImage(magnet, (float)vsf.item[i].x, (float)vsf.item[i].y, (float)vsf.item[i].size, (float)vsf.item[i].size);
+                }
+                else if (vsf.item[i].type == 0) //회복약
+                {
+                    g.DrawImage(heal, (float)vsf.item[i].x, (float)vsf.item[i].y, (float)vsf.item[i].size, (float)vsf.item[i].size);
+                }
+                else if (vsf.item[i].type == 2) //폭탄
+                {
+                    g.DrawImage(bomb, (float)vsf.item[i].x, (float)vsf.item[i].y, (float)vsf.item[i].size, (float)vsf.item[i].size);
+                }
+            }
+            // 먹은 아이템
+            for (int i = 0; i < vsf.eat.Count; i++)
+            {
+                if (vsf.eat[i].type == 3) //초록 경험치
+                {
+                    g.DrawImage(green_gem, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
+                }
+                else if (vsf.eat[i].type == 4) //파랑 경험치
+                {
+                    g.DrawImage(blue_gem, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
+                }
+                else if (vsf.eat[i].type == 5) //보라 경험치
+                {
+                    g.DrawImage(purple_gem, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
+                }
+                else if (vsf.eat[i].type == 1) //자석
+                {
+                    g.DrawImage(magnet, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
+                }
+                else if (vsf.eat[i].type == 0) //회복약
+                {
+                    g.DrawImage(heal, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
+                }
+                else if (vsf.eat[i].type == 2) //폭탄
+                {
+                    g.DrawImage(bomb, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
+                }
+            }
+
+
+
+
+
+
+
+
+
             //캐릭터 움직이는거 그리기
             if (vsf.my.see == 'w')
             {
@@ -671,7 +755,8 @@ namespace vamroguelike
             float hpbarY = (float)vsf.my.y - hpbarHeight;  // Y좌표: 캐릭터 머리(y)보다 10픽셀 위로
 
             // 3. 그리기 도구 생성 (빨강: 깎인 체력/배경, 초록: 남은 체력)
-            using (SolidBrush backBrush = new SolidBrush(Color.Black))
+            // using을 쓰는 이유 그게 좀더 안정적이라고 합니다
+            using (SolidBrush backBrush = new SolidBrush(Color.Red))
             using (SolidBrush healthBrush = new SolidBrush(Color.LimeGreen))
             using (Pen borderPen = new Pen(Color.Black, 1)) // 테두리용 펜
             {
@@ -679,70 +764,14 @@ namespace vamroguelike
                 g.FillRectangle(backBrush, hpbarX, hpbarY, hpbarWidth, hpbarHeight);
 
                 // (2) 현재 체력(초록색) 그리기 - 비율(hpRatio)만큼 너비 조절
-                g.FillRectangle(healthBrush, hpbarX, hpbarY, hpbarWidth, hpbarHeight);
+                g.FillRectangle(healthBrush, hpbarX, hpbarY, hpbarWidth*hpRatio, hpbarHeight);
 
                 // (3) 테두리 그리기 (검은색) - 깔끔하게 보이도록 외곽선 추가
                 g.DrawRectangle(borderPen, hpbarX, hpbarY, hpbarWidth, hpbarHeight);
             }
 
 
-            //아이템들 그리기
-            for (int i = 0; i < vsf.item.Count; i++)
-            {
-                
-                if (vsf.item[i].type == 3) //초록 경험치
-                {
-                    g.DrawImage(green_gem, (float)vsf.item[i].x, (float)vsf.item[i].y,(float) vsf.item[i].size, (float)vsf.item[i].size);
-                }
-                else if (vsf.item[i].type == 4) //파랑 경험치
-                {
-                    g.DrawImage(blue_gem, (float)vsf.item[i].x, (float)vsf.item[i].y, (float)vsf.item[i].size, (float)vsf.item[i].size);
-                }
-                else if (vsf.item[i].type == 5) //보라 경험치
-                {
-                    g.DrawImage(purple_gem, (float)vsf.item[i].x, (float)vsf.item[i].y, (float)vsf.item[i].size, (float)vsf.item[i].size);
-                }
-                else if(vsf.item[i].type == 1) //자석
-                {
-                    g.DrawImage(magnet, (float)vsf.item[i].x, (float)vsf.item[i].y, (float)vsf.item[i].size, (float)vsf.item[i].size);
-                }
-                else if (vsf.item[i].type == 0) //회복약
-                {
-                    g.DrawImage(heal, (float)vsf.item[i].x, (float)vsf.item[i].y, (float)vsf.item[i].size, (float)vsf.item[i].size);
-                }
-                else if (vsf.item[i].type == 2) //폭탄
-                {
-                    g.DrawImage(bomb, (float)vsf.item[i].x, (float)vsf.item[i].y, (float)vsf.item[i].size, (float)vsf.item[i].size);
-                }
-            }
-            // 먹은 아이템
-            for(int i = 0; i < vsf.eat.Count; i++)
-            {
-                if (vsf.eat[i].type == 3) //초록 경험치
-                {
-                    g.DrawImage(green_gem, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
-                }
-                else if (vsf.eat[i].type == 4) //파랑 경험치
-                {
-                    g.DrawImage(blue_gem, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
-                }
-                else if (vsf.eat[i].type == 5) //보라 경험치
-                {
-                    g.DrawImage(purple_gem, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
-                }
-                else if (vsf.eat[i].type == 1) //자석
-                {
-                    g.DrawImage(magnet, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
-                }
-                else if (vsf.eat[i].type == 0) //회복약
-                {
-                    g.DrawImage(heal, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
-                }
-                else if (vsf.eat[i].type == 2) //폭탄
-                {
-                    g.DrawImage(bomb, (float)vsf.eat[i].x, (float)vsf.eat[i].y, (float)vsf.eat[i].size, (float)vsf.eat[i].size);
-                }
-            }
+            
 
 
 

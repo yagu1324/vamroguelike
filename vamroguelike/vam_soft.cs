@@ -22,6 +22,9 @@ namespace vamroguelike
         bool game_end = false;
         Random rand = new Random();
 
+        double invisible_time = 0.1; //무적시간
+        double invisible_count = 0; //무적 카운트
+
         //맵 사이즈
         public int mapsize_x { get; set; } = 3000;
         public int mapsize_y { get; set; } = 3000;
@@ -181,6 +184,31 @@ namespace vamroguelike
                         my.damage_delay_count = 0; // 공속 카운트 초기화
                     }
                 }
+                else if (key[8]) // 일시 정지 키를 눌렀을 떄
+                {
+                    //일시정지 키를 눌렀을 때
+                    game_stop = true; //토글 형식으로 일시정지 설정
+                    key[8] = false; //키 초기화
+
+                    see_ability sa = new see_ability(); //능력치 창 열기
+                    //능력치 창에 유저 능력치 전달
+                    sa.attack_damage = my.damage;
+                    sa.attack_speed = my.damage_delay;
+                    sa.move_speed = my.speed;
+                    sa.max_hp = my.hp_max;
+                    sa.exp_plus = my.exp_plus;
+                    sa.weapon_size = my.weapons.size;
+                    sa.eat_size = my.eat_size;
+                    sa.weapon_damage = my.weapons.damage;
+                    sa.shield = my.shield;
+
+
+
+
+                    sa.ShowDialog();
+                    game_stop = false; //능력치 창 닫히면 다시 게임 재개
+
+                }
             }
 
 
@@ -215,150 +243,48 @@ namespace vamroguelike
 
             monsters.Add(m);
         }
-        
+
         void monster_move() // 몬스터 움직임
         {
-            double r = 360 / 16.0;
-            for (int i = 0; i < monsters.Count; i++) //몬스터 수만큼 반복
+            for (int i = 0; i < monsters.Count; i++) // 몬스터 수만큼 반복
             {
-                double dx=my.x - monsters[i].x,dy=my.y-monsters[i].y; // 거리 차이 구하기
-                double angle=Math.Atan2(dy,dx)*(180.0/Math.PI);//내 캐릭터와 이 좀비캐릭터의 최소 거리 각도를 알려준다
+                // 1. 거리 차이 구하기 (밑변 dx, 높이 dy)
+                double dx = my.x - monsters[i].x;
+                double dy = my.y - monsters[i].y;
 
-                
-                if (angle < 0)//음수이면 360을 더한다 -> 이러면 0~360의 값이 된다 / 단!!!! 0은 위가 아니라 오른쪽값이다
-                {
-                    angle += 360;
-                }
+                // 2. 대각선 거리 구하기 (피타고라스 정의: 빗변)
+                double dist = Math.Sqrt(dx * dx + dy * dy);
 
+                // 거리가 0이면 움직이지 않음 (0으로 나누기 방지)
+                if (dist == 0) continue;
 
+                // 3. 이동할 거리 계산 (프레임당 이동 거리)
+                double moveStep = monsters[i].speed / fps;
 
-                if (angle >= 348.75 || angle < 11.25) 
-                {
-                    // 0. 완전 오른쪽 (Right) 3시
+                // 4. 좌표 이동
+                // (dx / dist)는 코사인(Cos) 값과 같고, (dy / dist)는 사인(Sin) 값과 같습니다.
+                // 즉, 비율대로 x, y를 쪼개서 더해줍니다.
+                monsters[i].x += (dx / dist) * moveStep;
+                monsters[i].y += (dy / dist) * moveStep;
 
-                    monsters[i].see = 'd';//  보는 방향을 바꾸고
-                    monsters[i].x += monsters[i].speed / fps; // 1초당 움직일 수 있는 속도에 맞추어 속도를 늘린다
-                }
-                else if (angle < 33.75)
+                // 5. 바라보는 방향(Sprite) 결정
+                // x축 이동량이 더 크면 좌우, y축 이동량이 더 크면 상하 이미지를 씀
+                if (Math.Abs(dx) > Math.Abs(dy))
                 {
-                    // 1. 오른쪽에서 살짝 아래 (Right - Down) //3.5
-                    monsters[i].see = 'd';//  보는 방향 아래
-
-                    //총 움직일 수 있는 거리를 3칸이라 가정, monster speed를 3으로 나누고, x,y 를 조금씩 나눠서 증가
-                    monsters[i].x += monsters[i].speed*(2.0/3.0) / fps;//2
-                    monsters[i].y += monsters[i].speed * (1.0 / 3.0) / fps;//1
-
-                }
-
-                else if (angle < 56.25)// 오른쪽 밑 대각
-                {
-                    // 2. 오른쪽 아래 대각선 정중앙 (South-East Diagonal)
-                    monsters[i].see = 'd';//  보는 방향 아래
-                    monsters[i].x += monsters[i].speed * (2.0 / 3.0) / fps; //2.0
-                    monsters[i].y += monsters[i].speed * (2.0 / 3.0) / fps; //2.0
-                }
-
-                else if (angle < 78.75)
-                {
-                    // 3. 아래쪽에서 살짝 오른쪽 (Down - Right)
-                    monsters[i].see = 's';//보는 방향 밑
-                    monsters[i].x += monsters[i].speed * (1.0 / 3.0) / fps; //1
-                    monsters[i].y += monsters[i].speed * (2.0 / 3.0) / fps; //2
-
-                }
-                else if (angle < 101.25)
-                {
-                    // 4. 완전 아래쪽 (Down)
-                    monsters[i].see = 's';//보는 방향 밑
-                    monsters[i].y += monsters[i].speed * (3.0 / 3.0) / fps; //3
-                }
-                else if (angle < 123.75)
-                {
-                    // 5. 아래쪽에서 살짝 왼쪽 (Down - Left)
-                    monsters[i].see = 's';//보는 방향 밑
-                    monsters[i].x -= monsters[i].speed * (1.0 / 3.0) / fps; //1
-                    monsters[i].y += monsters[i].speed * (2.0 / 3.0) / fps; //2
-                }
-
-                else if (angle < 146.25)
-                {
-                    // 6. 왼쪽 아래 대각선 정중앙 (South-West Diagonal)
-                    monsters[i].see = 'a';//보는 방향 왼
-                    monsters[i].x -= monsters[i].speed * (2.0 / 3.0) / fps; //2.0
-                    monsters[i].y += monsters[i].speed * (2.0 / 3.0) / fps; //2.0
-                }
-
-                else if (angle < 168.75)
-                {
-                    // 7. 왼쪽에서 살짝 아래 (Left - Down)
-                    monsters[i].see = 'a';//보는 방향 왼
-                    monsters[i].x -= monsters[i].speed * (2.0 / 3.0) / fps; //1
-                    monsters[i].y += monsters[i].speed * (1.0 / 3.0) / fps; //2
-
-                }
-                else if (angle < 191.25)
-                {
-                    // 8. 완전 왼쪽 (Left)
-                    monsters[i].see = 'a';//보는 방향 왼
-                    monsters[i].x -= monsters[i].speed * (3.0 / 3.0) / fps; //1
-                }
-                else if (angle < 213.75)
-                {
-                    // 9. 왼쪽에서 살짝 위 (Left - Up)
-                    monsters[i].see = 'a';//보는 방향 왼
-                    monsters[i].x -= monsters[i].speed * (2.0 / 3.0) / fps; //1
-                    monsters[i].y -= monsters[i].speed * (1.0 / 3.0) / fps; //2
-                }
-
-                else if (angle < 236.25)
-                {
-                    // 10. 왼쪽 위 대각선 정중앙 (North-West Diagonal)
-                    monsters[i].see = 'a';//보는 방향 왼
-                    monsters[i].x -= monsters[i].speed * (2.0 / 3.0) / fps; //2.0
-                    monsters[i].y -= monsters[i].speed * (2.0 / 3.0) / fps; //2.0
-                }
-
-                else if (angle < 258.75)
-                {
-                    // 11. 위쪽에서 살짝 왼쪽 (Up - Left)
-                    monsters[i].see = 'w';//보는 방향 위
-                    monsters[i].x -= monsters[i].speed * (1.0 / 3.0) / fps; //-1
-                    monsters[i].y -= monsters[i].speed * (2.0 / 3.0) / fps; //-2
-                }
-                else if (angle < 281.25)
-                {
-                    // 12. 완전 위쪽 (Up)
-                    monsters[i].see = 'w';//보는 방향 위
-                    monsters[i].y -= monsters[i].speed * (3.0 / 3.0) / fps; //-3
-                }
-                else if (angle < 303.75)
-                {
-                    // 13. 위쪽에서 살짝 오른쪽 (Up - Right)
-                    monsters[i].see = 'w';//보는 방향 위
-                    monsters[i].x += monsters[i].speed * (1.0 / 3.0) / fps; //+1
-                    monsters[i].y -= monsters[i].speed * (2.0 / 3.0) / fps; //-2
-                }
-                else if (angle < 326.25)
-                {
-                    // 14. 오른쪽 위 대각선 정중앙 (North-East Diagonal)
-                    monsters[i].see = 'd';//보는 방향 오른
-                    monsters[i].x += monsters[i].speed * (2.0 / 3.0) / fps; //2.0
-                    monsters[i].y -= monsters[i].speed * (2.0 / 3.0) / fps; //-2.0
+                    if (dx > 0) monsters[i].see = 'd'; // 오른쪽
+                    else monsters[i].see = 'a';        // 왼쪽
                 }
                 else
                 {
-                    // 15. 오른쪽에서 살짝 위 (Right - Up)
-                    monsters[i].see = 'd';//보는 방향 오른
-                    monsters[i].x += monsters[i].speed * (2.0 / 3.0) / fps; //+2
-                    monsters[i].y -= monsters[i].speed * (1.0 / 3.0) / fps; //-1
+                    if (dy > 0) monsters[i].see = 's'; // 아래
+                    else monsters[i].see = 'w';        // 위
                 }
 
-                monsters[i].move_smooth_count += monsters[i].speed / (fps * move_smooth);// 움직임 발을 바꾸기 위한 것
-
+                // 6. 애니메이션 카운트 (기존 유지)
+                monsters[i].move_smooth_count += monsters[i].speed / (fps * move_smooth);
             }
-
-
         }
+        
         void drop_item(Monster m) //몬스터 드랍아이템, 경험치도 같이 떨군다
         {
             
@@ -372,7 +298,7 @@ namespace vamroguelike
             //드랍아이템
             Item i = new Item(); // item 객체 생성
             i.x = m.x + m.size_x / 2 / 2; i.y= m.y + m.size_y / 2;// item 좌표 지정
-            if (rand.Next(100) == 0) //   1/100확률
+            if (rand.Next(500) == 0) //   1/500확률
             {
                 i.size = 15;//특별한 아이템은 크기가 15
                 i.type=rand.Next(3); // 0~2까지 랜덤하게뜸
@@ -381,6 +307,31 @@ namespace vamroguelike
             
         }
         
+        void avatar_crash_check() //몬스터와 유저가 부딪히면 체력을 깐다
+        {
+            if(invisible_count < invisible_time) //무적시간이면 패스
+            {
+                invisible_count += 1.0 / fps; //무적 카운트 증가
+                return;
+            }
+            else
+            {
+                for (int i = 0; i < monsters.Count; i++)
+                {
+
+                    //몬스터와 아바타
+                    RectangleF monsterRect = new RectangleF((float)monsters[i].x, (float)monsters[i].y, monsters[i].size_x, monsters[i].size_y);
+                    RectangleF avatarRect = new RectangleF((float)my.x, (float)my.y, (float)my.size, (float)my.size);
+                    if (avatarRect.IntersectsWith(monsterRect))//닿았을 경우
+                    {
+                        double real_damage = Math.Max(monsters[i].damage - my.shield, 0); //방어력에 따른 데미지 감소
+                        my.hp -= real_damage; //데미지 깎임
+                    }
+                }
+                invisible_count = 0; //무적 카운트 초기화
+            }
+                
+        }
 
         void monster_crash_check()// 몬스터 크래쉬 체크
         {
@@ -392,7 +343,7 @@ namespace vamroguelike
                     RectangleF attackRect = new RectangleF((float)Attack[j].x, (float)Attack[j].y, (float)Attack[j].size, (float)Attack[j].size);
                     RectangleF monsterRect = new RectangleF((float)monsters[i].x, (float)monsters[i].y, monsters[i].size_x, monsters[i].size_y);
 
-                    if (monsterRect.IntersectsWith(attackRect))//몬스터와, 공격의 사각형이 서ㅈ로 닿았을 경우
+                    if (monsterRect.IntersectsWith(attackRect))//몬스터와, 공격의 사각형이 서로 닿았을 경우
                     {
                         monsters[i].hp -= Attack[j].damage + my.damage;//데미지 계산은 무기공격력 + 유저 공격력이다
                     }
@@ -410,7 +361,7 @@ namespace vamroguelike
             for(int i = 0; i < item.Count; i++)//item 리스트 만큼
             {
                 //이제 my.x my.y에서 eat_size만큼 넓힌다음에 닿았는지 확인
-                RectangleF avatarRect = new RectangleF((float)my.x-my.eat_size, (float)my.y - my.eat_size, my.size+ my.eat_size*2, my.size+ my.eat_size*2);
+                RectangleF avatarRect = new RectangleF((float)my.x-(float)my.eat_size, (float)my.y - (float)my.eat_size, my.size+ (float)my.eat_size*2, my.size+ (float)my.eat_size*2);
                 RectangleF itemRect = new RectangleF((float)item[i].x, (float)item[i].y, (float)item[i].size, (float)item[i].size);
                 if(avatarRect.IntersectsWith(itemRect))//아바타와 아이템이 닿았을 경우
                 {
@@ -524,6 +475,7 @@ namespace vamroguelike
                 else if (select_ability == 1) //최대체력
                 {
                     my.hp += value;
+                    my.hp_max += value;
                 }
                 else if(select_ability == 2)//공격속도
                 {
@@ -545,8 +497,13 @@ namespace vamroguelike
                 {
                     my.exp_plus += value/100;
                 }
+                else if (select_ability == 7)//먹는 범위 증가
+                {
+                    my.eat_size *= (1 + value);
+                }
+
                 //이걸해야 윈폼 다른 창이 켜졌을 때 키나 눌려져있는 현상이 사라진다
-                for(int i = 0; i < 9; i++)
+                for (int i = 0; i < 9; i++)
                 {
                     key[i]=false; //키 초기화
                 }
@@ -559,6 +516,7 @@ namespace vamroguelike
            spawn_monster();
            monster_move();
            monster_crash_check();
+           avatar_crash_check();
            item_eat();
            level_up();
            key_check();

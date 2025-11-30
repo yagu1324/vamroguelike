@@ -21,13 +21,13 @@ namespace vamroguelike
         public char see { get; set; } // 보는곳  // 캐릭터가 지금 보고있는 방향 'w' 'a' 's' 'd'로 한다
         public Weapons weapons { get; set; } // 무기 프로퍼티
 
-        public int eat_size { get; set; } = 50;// 아이템 먹는 크기 사이즈
+        public double eat_size { get; set; } = 50;// 아이템 먹는 크기 사이즈
 
-        public double exp_plus { get; set; } = 0;//경험치를 능력치를 먹음으로서 더 먹을 수 있게한다
+        public double exp_plus { get; set; } = 100;//경험치를 능력치를 먹음으로서 더 먹을 수 있게한다
         public User()
         {
             weapons = new Weapons();
-            speed = 500; // 기본 속도 10으로 초기화
+            speed = 700; // 기본 속도 70으로 초기화
             hp_max = 10; // 최대 체력 10
             hp = hp_max; // 체력 
             damage = 1;// 초반 공격력 1

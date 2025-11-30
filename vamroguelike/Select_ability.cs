@@ -12,7 +12,7 @@ namespace vamroguelike
         public int select_num { get; set; }   // 선택한 능력치 번호
         public double add_value { get; set; } // 선택한 능력치 수치
 
-        // ★ 핵심: 3개의 패널 정보를 저장할 배열 (클래스 대신 사용)
+        // 3개의 패널 정보를 저장할 배열
         // 0번 칸, 1번 칸, 2번 칸의 데이터를 각각 저장합니다.
         private int[] save_ids = new int[3];       // 능력치 번호 저장
         private double[] save_values = new double[3]; // 수치 저장
@@ -30,14 +30,30 @@ namespace vamroguelike
         private void Select_ability_Load(object sender, EventArgs e)
         {
             // 1. 중복 방지를 위해 0~6 카드를 섞습니다.
-            List<int> deck = new List<int>() { 0, 1, 2, 3, 4, 5, 6 }; //0.공격력 1.최대체력 2.공격속도 3.방어력 4.무기크기 5.이동속도 6.경험치획득량
-            var shuffledDeck = deck.OrderBy(x => Guid.NewGuid()).ToList();
+            List<int> deck = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7 }; //0.공격력 1.최대체력 2.공격속도 3.방어력 4.무기크기 5.이동속도 6.경험치획득량 7.먹는범위증가
 
-            // 2. 섞인 카드를 각 패널에 배정합니다. (마지막 숫자는 칸 번호 0, 1, 2)
-            SetAbility(select_1, select_image_1, select_write_1, shuffledDeck[0], 0);
-            SetAbility(select_2, select_image_2, select_write_2, shuffledDeck[1], 1);
-            SetAbility(select_3, select_iamge_3, select_write_3, shuffledDeck[2], 2);
-        }
+            // 2. 뽑은 카드를 저장할 배열 (3개)
+            int[] selectedCards = new int[3];
+
+            // 3. 랜덤으로 하나씩 뽑아서 옮기기 (3번 반복)
+            for (int i = 0; i < 3; i++)
+            {
+                // (1) 남은 카드 중에서 랜덤한 순번(Index)을 하나 고릅니다.
+                // deck.Count는 카드를 뺄 때마다 줄어듭니다 (7 -> 6 -> 5)
+                int randomIndex = rand.Next(deck.Count);
+
+                // (2) 고른 카드를 결과 배열에 저장합니다.
+                selectedCards[i] = deck[randomIndex];
+
+                // (3) 뽑은 카드는 뭉치에서 제거합니다. (중복 방지)
+                deck.RemoveAt(randomIndex);
+            }
+
+            // 4. 뽑은 카드를 각 패널에 배정합니다.
+            SetAbility(select_1, select_image_1, select_write_1, selectedCards[0], 0);
+            SetAbility(select_2, select_image_2, select_write_2, selectedCards[1], 1);
+            SetAbility(select_3, select_iamge_3, select_write_3, selectedCards[2], 2);
+        }   
 
         // [2] 패널 세팅 함수
         // abilityId: 능력치 번호 (섞인 카드에서 나온 것)
@@ -111,11 +127,11 @@ namespace vamroguelike
             else if (abilityId == 4) // 무기크기
             {
                 title = "무기크기";
-                if (rank_text == "Common") value = GetRandomValue(0.1, 0.15);
-                else if (rank_text == "Rare") value = GetRandomValue(0.15, 0.2);
-                else if (rank_text == "Epic") value = GetRandomValue(0.2, 0.4);
-                else if (rank_text == "Legendary") value = GetRandomValue(0.5, 0.7);
-                else value = GetRandomValue(0.7, 1.0);
+                if (rank_text == "Common") value = GetRandomValue(0.01, 0.03, 3);
+                else if (rank_text == "Rare") value = GetRandomValue(0.03, 0.05, 3);
+                else if (rank_text == "Epic") value = GetRandomValue(0.05, 0.1, 3);
+                else if (rank_text == "Legendary") value = GetRandomValue(0.1, 0.2, 3);
+                else value = GetRandomValue(0.2, 0.3, 3);
                 desc = "커집니다.";
                 pic.Image = Image.FromFile("image/potato.png"); //무기크기
             }
@@ -141,6 +157,17 @@ namespace vamroguelike
                 desc = "증가합니다.";
                 pic.Image = Image.FromFile("image/green_gem.png"); //경험치
             }
+            else if (abilityId == 7) // 먹는범위증가
+            {
+                title = "아이템 획득 범위 증가";
+                if (rank_text == "Common") value = GetRandomValue(0.01, 0.03, 3);
+                else if (rank_text == "Rare") value = GetRandomValue(0.03, 0.05, 3);
+                else if (rank_text == "Epic") value = GetRandomValue(0.05, 0.1, 3);
+                else if (rank_text == "Legendary") value = GetRandomValue(0.1, 0.2, 3);
+                else value = GetRandomValue(0.2, 0.3, 3);
+                desc = "증가합니다.";
+                pic.Image = Image.FromFile("image/magnet.png"); //경험치
+            }
 
             // 정해진 값들을 배열에 넣음 (저장용) 
             save_ids[slotIndex] = abilityId;   // 예: 0 (공격력)
@@ -151,13 +178,17 @@ namespace vamroguelike
             // 패널 안쪽으로 여백을 줘서 테두리가 보일 공간을 만듭니다.
             p.Padding = new Padding(5);
 
-            if (abilityId == 6 || abilityId==4)
+            if ( abilityId==4||abilityId==7) //무기 크기
             {
-                lbl.Text = $"[{rank_text}] {title}\n{title}이(가) {value}%만큼 {desc}";
+                lbl.Text = $"[{rank_text}] {title}\n{title} 이(가) {value*100.0}%만큼 {desc}";
+            }
+            else if (abilityId == 6) //이동속도
+            {
+                lbl.Text = $"[{rank_text}] {title}\n{title} 이(가) {value}%만큼 {desc}";
             }
             else
             {
-                lbl.Text = $"[{rank_text}] {title}\n{title}이(가) {value}만큼 {desc}";
+                lbl.Text = $"[{rank_text}] {title}\n{title} 이(가) {value}만큼 {desc}";
             }
 
             
@@ -243,9 +274,9 @@ namespace vamroguelike
         }
 
         // 랜덤 수치 계산 도우미 (소수점 1자리 반올림)
-        private double GetRandomValue(double min, double max)
+        private double GetRandomValue(double min, double max, int digits = 1)
         {
-            return Math.Round((rand.NextDouble() * (max - min) + min), 1);
+            return Math.Round((rand.NextDouble() * (max - min) + min), digits);
         }
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e) { }
