@@ -68,7 +68,7 @@ namespace vamroguelike
 
             if (rankNum < 50) rank_text = "Common";
             else if (rankNum < 80) rank_text = "Rare";
-            else if (rankNum < 95) rank_text = "Epic";
+            else if (rankNum < 97) rank_text = "Epic";
             else if (rankNum < 99) rank_text = "Legendary";
             else rank_text = "Mythic";
 
@@ -259,7 +259,7 @@ namespace vamroguelike
                 case "Common": borderColor = Color.Gray; break;
                 case "Rare": borderColor = Color.DodgerBlue; break;     // 파랑
                 case "Epic": borderColor = Color.MediumPurple; break;   // 보라
-                case "Legendary": borderColor = Color.Gold; break;      // 노랑
+                case "Legendary": borderColor = Color.Goldenrod; break;      // 노랑
                 case "Mythic": borderColor = Color.Red; break;          // 빨강
             }
 
@@ -271,6 +271,9 @@ namespace vamroguelike
                 Rectangle rect = new Rectangle(halfPen, halfPen, c.Width - (int)myPen.Width, c.Height - (int)myPen.Width);
                 e.Graphics.DrawRectangle(myPen, rect);
             }
+
+
+
         }
 
         // 랜덤 수치 계산 도우미 (소수점 1자리 반올림)

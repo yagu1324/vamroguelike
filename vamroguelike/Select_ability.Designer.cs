@@ -81,6 +81,7 @@
             // 
             // select_write_1
             // 
+            this.select_write_1.BackColor = System.Drawing.SystemColors.ControlLight;
             this.select_write_1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.select_write_1.Location = new System.Drawing.Point(0, 0);
             this.select_write_1.Margin = new System.Windows.Forms.Padding(0);
@@ -101,6 +102,7 @@
             // 
             // select_write_2
             // 
+            this.select_write_2.BackColor = System.Drawing.SystemColors.ControlLight;
             this.select_write_2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.select_write_2.Location = new System.Drawing.Point(0, 0);
             this.select_write_2.Margin = new System.Windows.Forms.Padding(0);
@@ -121,6 +123,7 @@
             // 
             // select_write_3
             // 
+            this.select_write_3.BackColor = System.Drawing.SystemColors.ControlLight;
             this.select_write_3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.select_write_3.Location = new System.Drawing.Point(0, 0);
             this.select_write_3.Margin = new System.Windows.Forms.Padding(0);
@@ -132,6 +135,7 @@
             // 
             // select_image_1
             // 
+            this.select_image_1.BackColor = System.Drawing.SystemColors.Control;
             this.select_image_1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.select_image_1.Location = new System.Drawing.Point(3, 3);
             this.select_image_1.Name = "select_image_1";

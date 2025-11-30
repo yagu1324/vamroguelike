@@ -229,6 +229,9 @@
     <Content Include="image\attack_top_9.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="image\axe.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="image\blue_gem.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
