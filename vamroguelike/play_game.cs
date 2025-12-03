@@ -76,7 +76,7 @@ namespace vamroguelike
         List<int> atk_delete_num;//Attack_list를 삭제하기위해 index 값을 저장할 list
         double anime_tick; //애니메이션 스프라이트를 자연스럽게 하기위한 tick 필드
 
-        public play_game()
+        public play_game(bool Continue)
         {
             InitializeComponent();
 
@@ -164,10 +164,21 @@ namespace vamroguelike
             vsf = new vam_soft(); // 게임 내부 소프트
             anime_tick = 1.0/vsf.fps;// anime_tick 애니메이션 스프라이트를 위해 필욯마
             this.ClientSize = new Size(vsf.formsize_x,vsf.formsize_y); //폼 크기 @@@@@
-
             viewx = (float)vsf.my.x;viewy=(float)vsf.my.y; // 뷰포인트값 아바타 위치로 초기화
-
             atk_delete_num = new List<int>(); // atk 부분 삭제하기 위해서
+
+
+
+
+
+            if (Continue == true) // 계속하기면
+            {
+                vsf.LoadGame(); // 게임 불러오기
+                                // 불러온 좌표에 맞춰서 화면 시점(View)도 바로 이동시켜줌
+                viewx = vsf.viewx;
+                viewy = vsf.viewy;
+            }
+
 
             // 이 속성이 False이면, 폼 위에 TextBox 같은 컨트롤이 있을 때 폼은 키 입력을 받지 못합니다.
             this.KeyPreview = true;
@@ -362,6 +373,14 @@ namespace vamroguelike
             view_point_check(); // 뷰포인트 확인 후 옮김
             this.Invalidate();// 다시 그리기
         }
+
+        private void play_game_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            vsf.viewx = viewx; 
+            vsf.viewy = viewy;
+            vsf.SaveGame();
+        }
+
         protected override void OnPaint(PaintEventArgs e) //그림그리기
         {
             base.OnPaint(e);

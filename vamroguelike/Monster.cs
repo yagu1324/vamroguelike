@@ -8,7 +8,7 @@ using System.Drawing;
 namespace vamroguelike
 {
 
-    class Monster : Mob
+    public class Monster : Mob
     {
         public int type { get; set; } // 몬스터 타입, 0= 좀비
         public int size_x { get; set; } = 30; //크기는 50

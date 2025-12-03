@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace vamroguelike
 {
-    class User : Mob
+    public class User : Mob
     {
         public Weapons w { get; set; } // 무기
 
-        public double damage_delay { get; set; } = 10;//공속 //기본 공속 1
+        public double damage_delay { get; set; } = 1;//공속 //기본 공속 1
         public double damage_delay_count { get; set; } = 0;//공속 체크할 카운트
         public int Lv { get; set; } = 1; //레벨
 
@@ -23,11 +23,11 @@ namespace vamroguelike
 
         public double eat_size { get; set; } = 50;// 아이템 먹는 크기 사이즈
 
-        public double exp_plus { get; set; } = 100;//경험치를 능력치를 먹음으로서 더 먹을 수 있게한다
+        public double exp_plus { get; set; } = 0;//경험치를 능력치를 먹음으로서 더 먹을 수 있게한다
         public User()
         {
             weapons = new Weapons();
-            speed = 700; // 기본 속도 70으로 초기화
+            speed = 100; // 기본 속도 70으로 초기화
             hp_max = 10; // 최대 체력 10
             hp = hp_max; // 체력 
             damage = 1;// 초반 공격력 1

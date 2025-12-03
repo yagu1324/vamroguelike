@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace vamroguelike
 {
-    class Weapons
+    public class Weapons
     {
         //생성될 좌표
         public double x { get; set; }

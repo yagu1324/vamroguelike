@@ -13,14 +13,14 @@ namespace vamroguelike
         /// 해당 애플리케이션의 주 진입점입니다.
         /// </summary>
         [STAThread]
-        [DllImport("kernel32.dll")]
-        public static extern bool AllocConsole();
+        //[DllImport("kernel32.dll")] //콘솔창 띄우기 용
+        //public static extern bool AllocConsole();//콘솔창 띄우기 용
         static void Main()
         {
-            AllocConsole();
+            //AllocConsole();//콘솔창 띄우기 용
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new play_game());
+            Application.Run(new start());
         }
     }
 }

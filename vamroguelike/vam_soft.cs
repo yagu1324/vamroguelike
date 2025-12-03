@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,11 +8,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
+using System.IO;             // 파일 입출력용
+using Newtonsoft.Json;       // JSON 직렬화용
 
 namespace vamroguelike
 {
     class vam_soft
     {
+        public float viewx, viewy; // 저장용 뷰포트 좌표
         public double timer { get; set; } // 게임타이머
         public bool game_stop { get; set; } //게임멈출 함수
         public bool[] key = new bool[9]; // 키보드 입력 0=w 1=a  2=s 3=d   4=위 5=왼 6=아래 7=오른 8=p (pause) 능력치 보는거
@@ -47,6 +51,7 @@ namespace vamroguelike
 
         double move_smooth = 7.0;// 움직임을 자연스럽게 보이기 위한 값 / 값이 높을 수록 느리게 애니메이션이 바뀐다
 
+        int dif_level = 0,dif_level_count=0; // 난이도 증가 카운트
 
         public vam_soft() {
             //초기화
@@ -307,7 +312,9 @@ namespace vamroguelike
         
         void avatar_crash_check() //몬스터와 유저가 부딪히면 체력을 깐다
         {
-            if(invisible_count < invisible_time) //무적시간이면 패스
+            double crash_care = my.size/10; //충돌 거리가 이미지에 맞지 않아 조금 줄입니다
+            //아바타 사이즈의 1/10만큼 줄임
+            if (invisible_count < invisible_time) //무적시간이면 패스
             {
                 invisible_count += 1.0 / fps; //무적 카운트 증가
                 return;
@@ -319,7 +326,7 @@ namespace vamroguelike
 
                     //몬스터와 아바타
                     RectangleF monsterRect = new RectangleF((float)monsters[i].x, (float)monsters[i].y, monsters[i].size_x, monsters[i].size_y);
-                    RectangleF avatarRect = new RectangleF((float)my.x, (float)my.y, (float)my.size, (float)my.size);
+                    RectangleF avatarRect = new RectangleF((float)my.x+(float)crash_care, (float)my.y +(float)crash_care, (float)my.size - (float)crash_care - (float)crash_care, (float)my.size - (float)crash_care - (float)crash_care);
                     if (avatarRect.IntersectsWith(monsterRect))//닿았을 경우
                     {
                         double real_damage = Math.Max(monsters[i].damage - my.shield, 0); //방어력에 따른 데미지 감소
@@ -520,7 +527,54 @@ namespace vamroguelike
             monster.shield= dif_level_field * dif_level_field;
             spawn_monster(monster);
         }
-        
+
+        public void SaveGame()
+        {
+            // 1. 현재 게임 상태를 SaveData 객체에 담기
+            SaveData data = new SaveData
+            {
+                PlayerData = this.my,
+                MonsterList = this.monsters,
+                ItemList = this.item,
+                EatenItems = this.eat,
+                GameTime = this.timer,
+                viewx = this.viewx,
+                viewy = this.viewy
+            };
+
+            // 2. 객체를 JSON 문자열로 변환 (Formatting.Indented는 줄바꿈을 해줘서 보기 좋게 만듦)
+            string json = JsonConvert.SerializeObject(data, Formatting.Indented);
+
+            // 3. 파일로 저장 (실행 파일 경로에 savegame.json 생성)
+            File.WriteAllText("savegame.json", json);
+        }
+        public void LoadGame()
+        {
+            string path = "savegame.json";
+
+            // 저장된 파일이 있는지 확인
+            if (File.Exists(path))
+            {
+                // 1. 파일에서 JSON 문자열 읽기
+                string json = File.ReadAllText(path);
+
+                // 2. JSON을 SaveData 객체로 복원
+                SaveData data = JsonConvert.DeserializeObject<SaveData>(json);
+
+                // 3. 게임 변수들에 덮어씌우기
+                if (data != null)
+                {
+                    this.my = data.PlayerData;
+                    this.monsters = data.MonsterList;
+                    this.item = data.ItemList;
+                    this.eat = data.EatenItems;
+                    this.timer = data.GameTime;
+                    this.viewx = data.viewx;
+                    this.viewy = data.viewy;
+                }
+            }
+        }
+
         public void play_form_soft()//실제 실행될 게임 메소드
         {
            
