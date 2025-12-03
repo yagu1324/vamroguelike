@@ -214,11 +214,9 @@ namespace vamroguelike
 
         }
 
-        void spawn_monster()// 몬스터를 자동스폰하는것, 화면 밖에서 나와야한다
+        void spawn_monster(Monster m)// 몬스터를 자동스폰하는것, 화면 밖에서 나와야한다
         {
-            
             int spawn_min_dis = 100; // 스폰되는 최대 거리 범위
-            Monster m = new Monster(0); // 일단 기본은 좀비로 설정
             int see=rand.Next(4); //스폰된 방향 설정
             if (see == 0)//w
             {
@@ -511,16 +509,29 @@ namespace vamroguelike
                 game_stop = false; //게임 멈춤을 끔
             }
         }
+        
+        void Dif_level() // 난이도 조정
+        {
+            Monster monster = new Monster(0); // 기본 좀비타입으로
+            int dif_level_field = (int)((timer / 60) + 1);
+            monster.hp_max = dif_level_field * dif_level_field;
+            monster.hp = dif_level_field * dif_level_field;
+            monster.damage= dif_level_field * dif_level_field;
+            monster.shield= dif_level_field * dif_level_field;
+            spawn_monster(monster);
+        }
+        
         public void play_form_soft()//실제 실행될 게임 메소드
         {
-           spawn_monster();
+           
            monster_move();
+           Dif_level();
            monster_crash_check();
            avatar_crash_check();
            item_eat();
            level_up();
            key_check();
-           timer += 1.5 / fps;// 게임 시간 저장 (1.0으로 하니까 느림
+           timer += 1.5 / fps;// 게임 시간 저장 1.0으로 하니까 느림
         }
         
     }
