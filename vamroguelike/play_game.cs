@@ -369,6 +369,19 @@ namespace vamroguelike
 
         void game_timer_Tick(object sender, EventArgs e) { //실제로 틱 마다 실행하는 코드
             if (vsf.game_stop == true) { return; }
+            if (vsf.game_end == true) // 게임이 끝났을 경우
+            {
+                game_timer.Stop(); // 1. 타이머 멈춤
+                this.Hide();       // 2. 게임 화면 숨김
+
+                using (End endForm = new End(vsf.kill_count,vsf.score)) // 3. 엔딩 화면 띄우기
+                {
+                    endForm.ShowDialog();
+                }
+
+                this.Close(); // 4. 엔딩 화면 닫히면 play_game 종료 (start 화면으로 복귀)
+                return;
+            }
             vsf.play_form_soft(); // 게임 내부의 좌표들을 처리함
             view_point_check(); // 뷰포인트 확인 후 옮김
             this.Invalidate();// 다시 그리기
@@ -376,9 +389,14 @@ namespace vamroguelike
 
         private void play_game_FormClosing(object sender, FormClosingEventArgs e)
         {
-            vsf.viewx = viewx; 
-            vsf.viewy = viewy;
-            vsf.SaveGame();
+            if (vsf.game_end != true) // 게임이 로직대로 끝난게 아닌 강제로 종료되었을 때
+            {
+                vsf.viewx = viewx; 
+                vsf.viewy = viewy;
+                vsf.SaveGame();
+                System.Windows.Forms.Application.Exit();//게임 창을 닫으면 모든 폼을 종료한다
+            }
+            
         }
 
         protected override void OnPaint(PaintEventArgs e) //그림그리기

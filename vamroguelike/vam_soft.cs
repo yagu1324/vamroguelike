@@ -18,12 +18,13 @@ namespace vamroguelike
         public float viewx, viewy; // 저장용 뷰포트 좌표
         public double timer { get; set; } // 게임타이머
         public bool game_stop { get; set; } //게임멈출 함수
+        
         public bool[] key = new bool[9]; // 키보드 입력 0=w 1=a  2=s 3=d   4=위 5=왼 6=아래 7=오른 8=p (pause) 능력치 보는거
         int f = 2; // 1=메인화면, 2=플레이 화면
         play_game play;
         public User my;
         public int fps = 100; // 1초를 몇번 나눌것인가?
-        bool game_end = false;
+        public bool game_end { get; set; } = false;
         Random rand = new Random();
 
         double invisible_time = 0.1; //무적시간
@@ -53,6 +54,8 @@ namespace vamroguelike
 
         int dif_level = 0,dif_level_count=0; // 난이도 증가 카운트
 
+        public int score { get; set; } = 0; //죽인 몬스터 수
+        public int kill_count { get; set; } = 0;
         public vam_soft() {
             //초기화
             my = new User();
@@ -294,8 +297,7 @@ namespace vamroguelike
             //경험치
             Item exp = new Item();//경험치 객체 생성
             exp.x = m.x+m.size_x/2/2; exp.y=m.y+m.size_y/2;// 좌표값 지정
-            
-            exp.type = 3;//경험치 생성
+            exp.type = 3+m.exp_type;//경험치 생성
             item.Add(exp); // 리스트 값에 저장
 
             //드랍아이템
@@ -329,8 +331,7 @@ namespace vamroguelike
                     RectangleF avatarRect = new RectangleF((float)my.x+(float)crash_care, (float)my.y +(float)crash_care, (float)my.size - (float)crash_care - (float)crash_care, (float)my.size - (float)crash_care - (float)crash_care);
                     if (avatarRect.IntersectsWith(monsterRect))//닿았을 경우
                     {
-                        double real_damage = Math.Max(monsters[i].damage - my.shield, 0); //방어력에 따른 데미지 감소
-                        my.hp -= real_damage; //데미지 깎임
+                        my -= monsters[i]; // 연산자 중복으로 데미지 까기
                     }
                 }
                 invisible_count = 0; //무적 카운트 초기화
@@ -350,12 +351,15 @@ namespace vamroguelike
 
                     if (monsterRect.IntersectsWith(attackRect))//몬스터와, 공격의 사각형이 서로 닿았을 경우
                     {
-                        monsters[i].hp -= Attack[j].damage + my.damage;//데미지 계산은 무기공격력 + 유저 공격력이다
+                        monsters[i] -= my;//데미지 계산은 무기공격력 + 유저 공격력이다
                     }
                     if (monsters[i].hp <= 0)//체력이 0 이하로 떨어졌을 경우 삭제한다
                     {
                         drop_item(monsters[i]);//몬스터 드랍아이템
+                        score += monsters[i].exp_type + 1;
                         monsters.RemoveAt(i); //삭제
+                        
+                        kill_count++;
                     }
                 }
             }
@@ -525,6 +529,15 @@ namespace vamroguelike
             monster.hp = dif_level_field * dif_level_field;
             monster.damage= dif_level_field * dif_level_field;
             monster.shield= dif_level_field * dif_level_field;
+
+            if(monster.hp_max > 50)
+            {
+                monster.exp_type = 1;
+            }
+            else if (monster.hp_max > 100)
+            {
+                monster.exp_type = 2;
+            }
             spawn_monster(monster);
         }
 
@@ -574,18 +587,26 @@ namespace vamroguelike
                 }
             }
         }
+        void end_game()
+        {
+            if (my.hp <= 0)//아바타의 체력이 0이 되었을 경우
+            {
+                game_end = true; // 게임엔드 필드를 참으로 바꿈
+            }
+        }
 
         public void play_form_soft()//실제 실행될 게임 메소드
         {
            
-           monster_move();
-           Dif_level();
-           monster_crash_check();
-           avatar_crash_check();
-           item_eat();
-           level_up();
-           key_check();
+           monster_move();//몬스터움직임
+           Dif_level();//난이도에 따른 몬스터 스폰
+           monster_crash_check();//몬스터가 공격에 부딪혔는지 확인
+           avatar_crash_check();//내 캐릭터가 몬스터에 부딪혔는지 확인
+           item_eat();//아이템에관한 모든 로직
+           level_up();//레벨업
+           key_check();//어떤키를 눌렀는지 확인 (누른 키에 따라 이벤트 발생)
            timer += 1.5 / fps;// 게임 시간 저장 1.0으로 하니까 느림
+           end_game();//게임이 끝났는지 확인
         }
         
     }

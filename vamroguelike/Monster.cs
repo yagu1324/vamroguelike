@@ -17,6 +17,19 @@ namespace vamroguelike
         public char see { get; set; } //바라보는곳  w a s d
 
         public double move_smooth_count { get; set; } = 0; //크기는 0 커질 떄 마다 발이 바뀜
+        public int exp_type { get; set; } = 0; // 경험치 타입
+
+        public static Monster operator -(Monster monster, User user)//연산자 중복, 몬스터가 공격을 맞았을 경우
+        {
+            double total_attack = user.weapons.damage + user.damage; //계산공식, 유저공격력 + 무기 공격력
+
+            double real_damage = Math.Max(total_attack - monster.shield, 0); //몬스터 방어력 만큼 반감
+
+            // 체력 감소
+            monster.hp -= real_damage; 
+
+            return monster;//반환
+        }
         public Monster(int i)
         {
             type = i; // 몬스터 타입 정하기

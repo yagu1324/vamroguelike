@@ -49,6 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="End.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="End.Designer.cs">
+      <DependentUpon>End.cs</DependentUpon>
+    </Compile>
     <Compile Include="Item.cs" />
     <Compile Include="Monster.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -96,6 +102,9 @@
     <Compile Include="Weapons.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
+    <EmbeddedResource Include="End.resx">
+      <DependentUpon>End.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="play_game.resx">
       <DependentUpon>play_game.cs</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
