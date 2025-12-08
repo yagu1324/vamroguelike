@@ -212,7 +212,6 @@ namespace vamroguelike
 
 
 
-
                     sa.ShowDialog();
                     game_stop = false; //능력치 창 닫히면 다시 게임 재개
 
