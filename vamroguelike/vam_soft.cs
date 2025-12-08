@@ -54,8 +54,8 @@ namespace vamroguelike
 
         int dif_level = 0,dif_level_count=0; // 난이도 증가 카운트
 
-        public int score { get; set; } = 0; //죽인 몬스터 수
-        public int kill_count { get; set; } = 0;
+        public int score { get; set; } = 0; //점수
+        public int kill_count { get; set; } = 0;//죽인 몬스터 수
         public vam_soft() {
             //초기화
             my = new User();
@@ -212,7 +212,10 @@ namespace vamroguelike
 
 
 
+
                     sa.ShowDialog();
+                    key[0] = key[1] = key[2] = key[3] =false; // 이거 안하면 누르면서 p 누르면 계속 움직임
+                    
                     game_stop = false; //능력치 창 닫히면 다시 게임 재개
 
                 }
@@ -253,20 +256,20 @@ namespace vamroguelike
         {
             for (int i = 0; i < monsters.Count; i++) // 몬스터 수만큼 반복
             {
-                // 1. 거리 차이 구하기 (밑변 dx, 높이 dy)
+                //  거리 차이 구하기 (밑변 dx, 높이 dy)
                 double dx = my.x - monsters[i].x;
                 double dy = my.y - monsters[i].y;
 
-                // 2. 대각선 거리 구하기 (피타고라스 정의: 빗변)
+                //  대각선 거리 구하기 (피타고라스 정의: 빗변)
                 double dist = Math.Sqrt(dx * dx + dy * dy);
 
                 // 거리가 0이면 움직이지 않음 (0으로 나누기 방지)
                 if (dist == 0) continue;
 
-                // 3. 이동할 거리 계산 (프레임당 이동 거리)
+                //  이동할 거리 계산 (프레임당 이동 거리)
                 double moveStep = monsters[i].speed / fps;
 
-                // 4. 좌표 이동
+                // 좌표 이동
                 // (dx / dist)는 코사인(Cos) 값과 같고, (dy / dist)는 사인(Sin) 값과 같습니다.
                 // 즉, 비율대로 x, y를 쪼개서 더해줍니다.
                 monsters[i].x += (dx / dist) * moveStep;
@@ -548,7 +551,7 @@ namespace vamroguelike
 
         public void SaveGame()
         {
-            // 1. 현재 게임 상태를 SaveData 객체에 담기
+            //  현재 게임 상태를 SaveData 객체에 담기
             SaveData data = new SaveData
             {
                 PlayerData = this.my,
@@ -560,10 +563,10 @@ namespace vamroguelike
                 viewy = this.viewy
             };
 
-            // 2. 객체를 JSON 문자열로 변환 (Formatting.Indented는 줄바꿈을 해줘서 보기 좋게 만듦)
+            //  객체를 JSON 문자열로 변환 (Formatting.Indented는 줄바꿈을 해줘서 보기 좋게 만듦)
             string json = JsonConvert.SerializeObject(data, Formatting.Indented);
 
-            // 3. 파일로 저장 (실행 파일 경로에 savegame.json 생성)
+            // 파일로 저장 (실행 파일 경로에 savegame.json 생성)
             File.WriteAllText("savegame.json", json);
         }
         public void LoadGame()

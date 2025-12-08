@@ -36,7 +36,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Name = "play_game";
-            this.Text = "Form1";
+            this.Text = "게임중";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.play_game_FormClosing);
             this.Load += new System.EventHandler(this.play_game_Load);
             this.ResumeLayout(false);

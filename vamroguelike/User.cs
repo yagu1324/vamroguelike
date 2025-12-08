@@ -23,7 +23,7 @@ namespace vamroguelike
 
         public double eat_size { get; set; } = 50;// 아이템 먹는 크기 사이즈
 
-        public double exp_plus { get; set; } = 0;//경험치를 능력치를 먹음으로서 더 먹을 수 있게한다
+        public double exp_plus { get; set; } = 10;//경험치를 능력치를 먹음으로서 더 먹을 수 있게한다
 
         public static User operator -(User user, Monster monster)//연산자 중복, 데미지 공식
         {

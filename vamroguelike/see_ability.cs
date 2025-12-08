@@ -13,8 +13,8 @@ namespace vamroguelike
     public partial class see_ability : Form
     {
         // 폼 크기
-        public int form_x { get; set; } = 700;
-        public int form_y { get; set; } = 700;
+        int form_x  = 700;
+        int form_y= 700;
 
         // 능력치 변수들
         public double attack_damage { get; set; }   // 공격력

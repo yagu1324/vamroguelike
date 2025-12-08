@@ -252,7 +252,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "see_ability";
-            this.Text = " ";
+            this.Text = " 능력치 보기";
             this.Load += new System.EventHandler(this.see_ability_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();

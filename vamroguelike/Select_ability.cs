@@ -213,7 +213,7 @@ namespace vamroguelike
             p.Paint -= Draw_Panel_Border; // 기존 연결 삭제 (중복 방지)
             p.Paint += Draw_Panel_Border; // 연결
 
-            // 픽쳐박스에도 테두리 연결 (원하시면)
+            // 픽쳐박스에도 테두리 연결 
             pic.Paint -= Draw_Panel_Border;
             pic.Paint += Draw_Panel_Border;
 

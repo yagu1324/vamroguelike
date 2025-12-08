@@ -168,7 +168,7 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.select_panel_tabel);
             this.Name = "Select_ability";
-            this.Text = "Select_ability";
+            this.Text = "능력치 고르기";
             this.Load += new System.EventHandler(this.Select_ability_Load);
             this.select_panel_tabel.ResumeLayout(false);
             this.select_1.ResumeLayout(false);

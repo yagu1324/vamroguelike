@@ -72,6 +72,24 @@ namespace vamroguelike
         System.Drawing.Image heal;
         System.Drawing.Image bomb;
 
+        //경험치바 그림그릴 때 필요
+        SolidBrush bgBrush = new SolidBrush(Color.Gray);// 회색 단색 브러시 생성 (배경 채우기용)
+        SolidBrush expBrush = new SolidBrush(Color.Gold); // 금색 단색 브러시 생성 (경험치 바 채우기용)
+        Pen exp_borderPen = new Pen(Color.Black, 2);// 검은색 펜 생성, 두께는 2 (테두리 그리기용)
+        Font expFont = new Font("맑은 고딕", 10, FontStyle.Bold);// '맑은 고딕' 폰트 생성, 크기 10, 굵게 설정 (글자 쓰기용)
+        Brush textBrush = new SolidBrush(Color.Black);// 검은색 브러시 생성 (글자 색상용 - Font와 함께 DrawString에 사용)
+
+        //타이머 그릴 때 필요
+        Font timerFont = new Font("맑은 고딕", 20, FontStyle.Bold); //글씨체
+        Brush timerBrush = new SolidBrush(Color.White); // 글자색
+        Brush shadowBrush = new SolidBrush(Color.Black); //글자의 글미자 효과
+
+        //체력바 그릴 때 필요
+        //  그리기 도구 생성 (빨강: 깎인 체력/배경, 초록: 남은 체력)
+        SolidBrush backBrush = new SolidBrush(Color.Red); //최대 체력바
+        SolidBrush healthBrush = new SolidBrush(Color.LimeGreen);// 현재 체력 바
+        Pen hp_borderPen = new Pen(Color.Black, 1);//명암용 테두리 바
+
 
         List<int> atk_delete_num;//Attack_list를 삭제하기위해 index 값을 저장할 list
         double anime_tick; //애니메이션 스프라이트를 자연스럽게 하기위한 tick 필드
@@ -777,7 +795,7 @@ namespace vamroguelike
             }
 
             //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 체력바 그리기 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-            // 1. 체력 비율 계산 (0.0 ~ 1.0)(0% ~ 100%) 라는뜻
+            //  체력 비율 계산 (0.0 ~ 1.0)(0% ~ 100%) 라는뜻
             // 0으로 나누는 오류 방지를 위해 hp_max가 0일 경우 처리 (안전장치)
             float hpRatio = 0;
             hpRatio = (float)vsf.my.hp / (float)vsf.my.hp_max;
@@ -785,27 +803,24 @@ namespace vamroguelike
             // 체력이 0보다 작아지면 바가 뚫고 나가는 것 방지
             if (hpRatio < 0) hpRatio = 0;
 
-            // 2. 체력바 위치 및 크기 설정
-            float hpbarWidth = vsf.my.size;       // 너비: 캐릭터 크기(size)와 동일하게
-            float hpbarHeight = 6;                // 높이: 6픽셀 (원하는 대로 조절 가능)
-            float hpbarX = (float)vsf.my.x-vsf.my.size/20;       // X좌표: 캐릭터와 동일
+            // 체력바 위치 및 크기 설정
+            float hpbarWidth = vsf.my.size; // 너비: 캐릭터 크기(size)와 동일하게
+            float hpbarHeight = 6;  // 높이: 6픽셀 (원하는 대로 조절 가능)
+            float hpbarX = (float)vsf.my.x-vsf.my.size/20;   // X좌표: 캐릭터와 동일
             float hpbarY = (float)vsf.my.y - hpbarHeight;  // Y좌표: 캐릭터 머리(y)보다 10픽셀 위로
 
-            // 3. 그리기 도구 생성 (빨강: 깎인 체력/배경, 초록: 남은 체력)
-            // using을 쓰는 이유 그게 좀더 안정적이라고 합니다
-            using (SolidBrush backBrush = new SolidBrush(Color.Red))
-            using (SolidBrush healthBrush = new SolidBrush(Color.LimeGreen))
-            using (Pen borderPen = new Pen(Color.Black, 1)) // 테두리용 펜
-            {
-                // (1) 배경(빨간색) 그리기 - 전체 체력바 크기
-                g.FillRectangle(backBrush, hpbarX, hpbarY, hpbarWidth, hpbarHeight);
 
-                // (2) 현재 체력(초록색) 그리기 - 비율(hpRatio)만큼 너비 조절
-                g.FillRectangle(healthBrush, hpbarX, hpbarY, hpbarWidth*hpRatio, hpbarHeight);
+            
+            
+            // (1) 배경(빨간색) 그리기 - 전체 체력바 크기
+            g.FillRectangle(backBrush, hpbarX, hpbarY, hpbarWidth, hpbarHeight);
 
-                // (3) 테두리 그리기 (검은색) - 깔끔하게 보이도록 외곽선 추가
-                g.DrawRectangle(borderPen, hpbarX, hpbarY, hpbarWidth, hpbarHeight);
-            }
+            // (2) 현재 체력(초록색) 그리기 - 비율(hpRatio)만큼 너비 조절
+            g.FillRectangle(healthBrush, hpbarX, hpbarY, hpbarWidth*hpRatio, hpbarHeight);
+
+            // (3) 테두리 그리기 (검은색) - 깔끔하게 보이도록 외곽선 추가
+            g.DrawRectangle(hp_borderPen, hpbarX, hpbarY, hpbarWidth, hpbarHeight);
+           
 
 
             
@@ -815,91 +830,80 @@ namespace vamroguelike
 
             //@@@@@@@@@@@@ 경험치 바 그리기 @@@@@@@@@@@@@@@@@@@@@@
 
-            // 1. 좌표계 초기화 (필수!) // 이걸 안하면 뷰포인트가 적용된 상태로 그려집니다
+            //  좌표계 초기화 (필수!) // 이걸 안하면 뷰포인트가 적용된 상태로 그려집니다
             g.ResetTransform();
-            using (SolidBrush bgBrush = new SolidBrush(Color.Gray))        // 배경색
-            using (SolidBrush expBrush = new SolidBrush(Color.Gold))        // 경험치색
-            using (Pen borderPen = new Pen(Color.Black, 2))                 // 테두리
-            using (Font expFont = new Font("맑은 고딕", 10, FontStyle.Bold)) // 폰트
-            using (Brush textBrush = new SolidBrush(Color.Black))           // 글씨 색
-            {
-                // 1. 경험치 비율 계산 (0.0 ~ 1.0)
-                float expRatio = 0;
+            // 경험치 비율 계산 (0.0 ~ 1.0)
+            float expRatio = 0;
                 
-                expRatio = (float)vsf.my.exp / (float)vsf.my.exp_max;
+            expRatio = (float)vsf.my.exp / (float)vsf.my.exp_max;
                 
-                // 비율이 1을 넘지 않도록 제한
-                if (expRatio > 1) expRatio = 1;
+            // 비율이 1을 넘지 않도록 제한
+            if (expRatio > 1) expRatio = 1;
 
-                // 2. 위치 및 크기 설정 (변수명 앞에 exp를 붙였습니다)
-                float expBarHeight = 20;                        // 높이
-                float expBarWidth = this.ClientSize.Width;      // 너비 (화면 전체)
-                float expBarX = 0;                              // X좌표 (왼쪽 끝)
-                float expBarY = this.ClientSize.Height - expBarHeight; // Y좌표 (화면 맨 아래)
+            //  위치 및 크기 설정 (변수명 앞에 exp를 붙였습니다)
+            float expBarHeight = 20;                        // 높이
+            float expBarWidth = this.ClientSize.Width;      // 너비 (화면 전체)
+            float expBarX = 0;                              // X좌표 (왼쪽 끝)
+            float expBarY = this.ClientSize.Height - expBarHeight; // Y좌표 (화면 맨 아래)
 
-                // 3. 그리기
-                // (1) 배경 (빈 게이지)
-                g.FillRectangle(bgBrush, expBarX, expBarY, expBarWidth, expBarHeight);
+            //  그리기
+            // (1) 배경 (빈 게이지)
+            g.FillRectangle(bgBrush, expBarX, expBarY, expBarWidth, expBarHeight);
 
-                // (2) 현재 경험치 (차오른 게이지)
-                // 너비를 비율(expRatio)만큼 곱해서 그림
-                g.FillRectangle(expBrush, expBarX, expBarY, expBarWidth * expRatio, expBarHeight);
+            // (2) 현재 경험치 (차오른 게이지)
+            // 너비를 비율(expRatio)만큼 곱해서 그림
+            g.FillRectangle(expBrush, expBarX, expBarY, expBarWidth * expRatio, expBarHeight);
 
-                // (3) 테두리 그리기
-                g.DrawRectangle(borderPen, expBarX, expBarY, expBarWidth, expBarHeight);
+            // (3) 테두리 그리기
+            g.DrawRectangle(exp_borderPen, expBarX, expBarY, expBarWidth, expBarHeight);
 
-                // (4) 텍스트 표시 (예: "LV.1 ( 50 / 100 )")
-                string expText = $"LV.{vsf.my.Lv} ( {(int)vsf.my.exp} / {vsf.my.exp_max} )";
+            // (4) 텍스트 표시 (예: "LV.1 ( 50 / 100 )")
+            string expText = $"LV.{vsf.my.Lv} ( {(int)vsf.my.exp} / {vsf.my.exp_max} )";
 
-                // 글자를 바 정중앙에 놓기 위한 계산
-                SizeF textSize = g.MeasureString(expText, expFont);
-                float textX = expBarWidth / 2 - textSize.Width / 2;
-                float textY = expBarY + (expBarHeight - textSize.Height) / 2;
+            // 글자를 바 정중앙에 놓기 위한 계산
+            SizeF exp_textSize = g.MeasureString(expText, expFont);
+            float textX = expBarWidth / 2 - exp_textSize.Width / 2;
+            float textY = expBarY + (expBarHeight - exp_textSize.Height) / 2;
 
-                g.DrawString(expText, expFont, textBrush, textX, textY);
-            }
-
+            g.DrawString(expText, expFont, textBrush, textX, textY);
 
 
 
+
+            
 
             //@@@@@@@@@@@@@@@@ 타이머 @@@@@@@@@@@@@@@@@@@@@@
-            // 1. 좌표계 초기화 (필수!) // 이걸 안하면 뷰포인트가 적용된 상태로 그려집니다
+            //  좌표계 초기화 (필수!) // 이걸 안하면 뷰포인트가 적용된 상태로 그려집니다
             g.ResetTransform();
 
-            // 2. 폰트 및 브러시 설정
+            //  폰트 및 브러시 설정
             // 글씨체: 맑은 고딕, 크기: 20, 스타일: 굵게
-            using (Font timerFont = new Font("맑은 고딕", 20, FontStyle.Bold))
-            using (Brush timerBrush = new SolidBrush(Color.White)) // 글자색: 흰색
-            {
-                // 3. 분과 초 계산하기
-                int minutes = (int)vsf.timer / 60; // 전체 초를 60으로 나눈 몫 (분)
-                int seconds = (int)vsf.timer % 60; // 전체 초를 60으로 나눈 나머지 (초)
+            int minutes = (int)vsf.timer / 60; // 전체 초를 60으로 나눈 몫 (분)
+            int seconds = (int)vsf.timer % 60; // 전체 초를 60으로 나눈 나머지 (초)
 
-                // 텍스트 만들기 (D2는 두 자리 숫자로 맞춘다는 뜻입니다. 예: 5 -> 05)
-                // 예: "Time : 02:05"
-                string timeText = $"Time {minutes}:{seconds}";
+            // 텍스트 만들기 (D2는 두 자리 숫자로 맞춘다는 뜻입니다. 예: 5 -> 05)
+            // 예: "Time : 02:05"
+            string timeText = $"Time {minutes}:{seconds}";
 
-                // 4. 글자 위치 계산 (화면 정중앙 상단)
-                // 글자의 실제 크기(가로, 세로)를 측정합니다.
-                SizeF textSize = g.MeasureString(timeText, timerFont);
+            //  글자 위치 계산 (화면 정중앙 상단)
+            // 글자의 실제 크기(가로, 세로)를 측정합니다.
+            SizeF timer_textSize = g.MeasureString(timeText, timerFont);
 
-                // x좌표: (화면너비 - 글자너비) / 2  -> 이렇게 해야 정확히 가운데 옵니다.
-                float x = (this.ClientSize.Width - textSize.Width) / 2;
+            // x좌표: (화면너비 - 글자너비) / 2  -> 이렇게 해야 정확히 가운데 옵니다.
+            float x = (this.ClientSize.Width - timer_textSize.Width) / 2;
 
-                // y좌표: 위에서 20픽셀 띄움
-                float y = 20;
+            // y좌표: 위에서 20픽셀 띄움
+            float y = 20;
 
-                // 5. 그리기
-                // (선택) 그림자 효과: 검은색으로 살짝 비껴서 먼저 그리면 글씨가 더 잘 보입니다.
-                using (Brush shadowBrush = new SolidBrush(Color.Black))
-                {
-                    g.DrawString(timeText, timerFont, shadowBrush, x + 2, y + 2); // 그림자
-                }
+            // 그리기
+            // 그림자 효과: 검은색으로 살짝 비껴서 먼저 그리면 글씨가 더 잘 보입니다.
 
-                // 진짜 글씨 그리기
-                g.DrawString(timeText, timerFont, timerBrush, x, y);
-            }
+            g.DrawString(timeText, timerFont, shadowBrush, x + 2, y + 2); // 그림자
+            
+
+            // 진짜 글씨 그리기
+            g.DrawString(timeText, timerFont, timerBrush, x, y);
+            
 
 
 

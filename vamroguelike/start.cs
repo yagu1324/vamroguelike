@@ -80,7 +80,7 @@ namespace vamroguelike
        
 
         // [새로하기 버튼]
-        private void button1_Click(object sender, EventArgs e)
+        private void button1_Click_1(object sender, EventArgs e)
         {
             if (File.Exists("savegame.json"))
             {
@@ -103,7 +103,6 @@ namespace vamroguelike
             if (File.Exists("savegame.json"))
             {
                 
-
                 play_game game = new play_game(true);
                 this.Hide();
                 game.ShowDialog();
@@ -119,19 +118,8 @@ namespace vamroguelike
 
         private void start_Load(object sender, EventArgs e) // 창이 켜지자 마자 생성
         {
-            if (File.Exists("savegame.json"))
-            {
-                DialogResult result = MessageBox.Show(
-                    "저장된 데이터가 있습니다. 이어하시겠습니까?",
-                    "알림",
-                    MessageBoxButtons.YesNo
-                );
-
-                if (result == DialogResult.Yes)
-                {
-                    button2_Click(sender, e);
-                }
-            }
+            
         }
+
     }
 }

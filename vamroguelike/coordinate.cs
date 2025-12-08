@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace vamroguelike
 {
-    public interface coordinate
+    public interface coordinate //좌표 인터페이스
     {
         double x { get; set; }
         double y { get; set; }

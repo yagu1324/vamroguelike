@@ -77,7 +77,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "End";
-            this.Text = "End";
+            this.Text = "끝";
             this.ResumeLayout(false);
 
         }

@@ -30,9 +30,6 @@ namespace vamroguelike
             label3.Text = $"점수 : {score}";
 
             //  배경 이미지 설정
-            // 프로그램 실행 파일(bin/Debug/...)과 같은 폴더에 "background.png"가 있어야 합니다.
-           
-                
             this.BackgroundImage = Image.FromFile(@"image/grass.png");
             this.BackgroundImageLayout = ImageLayout.Stretch; // 이미지를 폼 크기에 맞게 늘림
 
@@ -45,8 +42,8 @@ namespace vamroguelike
             delayTimer.Start(); // 타이머 시작
 
             // 키 이벤트 설정
-            this.KeyPreview = true;
-            this.KeyDown += new KeyEventHandler(End_KeyDown);
+            this.KeyPreview = true; //키값 우선받기
+            this.KeyDown += new KeyEventHandler(End_KeyDown); // 키 이벤트 추가
         }
         // 1초가 지나면 실행되는 함수
         private void DelayTimer_Tick(object sender, EventArgs e)
