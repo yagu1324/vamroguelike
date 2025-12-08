@@ -27,7 +27,7 @@ namespace vamroguelike
 
         public static User operator -(User user, Monster monster)//연산자 중복, 데미지 공식
         {
-            double real_damage = Math.Max(monster.damage - user.shield, 0); // 쉴드 적용, 음수 방지
+            double real_damage = Math.Max(monster.damage *(1/(1+ user.shield*0.01)), 0); // 쉴드 적용, 음수 방지
 
             // 체력 감소
             user.hp -= real_damage;

@@ -21,9 +21,9 @@ namespace vamroguelike
 
         public static Monster operator -(Monster monster, User user)//연산자 중복, 몬스터가 공격을 맞았을 경우
         {
-            double total_attack = user.weapons.damage + user.damage; //계산공식, 유저공격력 + 무기 공격력
+            double total_attack = (user.weapons.damage + user.damage); //계산공식, 유저공격력 + 무기 공격력
 
-            double real_damage = Math.Max(total_attack - monster.shield, 0); //몬스터 방어력 만큼 반감
+            double real_damage = Math.Max(total_attack * (1/(1+monster.shield*0.01)), 0); //리그오브레전드의 계산식
 
             // 체력 감소
             monster.hp -= real_damage; 

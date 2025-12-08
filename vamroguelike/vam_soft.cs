@@ -345,22 +345,28 @@ namespace vamroguelike
             {
                 for (int i = monsters.Count-1; i >=0; i--) //몬스터 숫자만큼 반복
                 {
-                    //몹과 몬스터를 정사각형으로 지정
-                    RectangleF attackRect = new RectangleF((float)Attack[j].x, (float)Attack[j].y, (float)Attack[j].size, (float)Attack[j].size);
-                    RectangleF monsterRect = new RectangleF((float)monsters[i].x, (float)monsters[i].y, monsters[i].size_x, monsters[i].size_y);
+                    Monster targetMonster = monsters[i];//몬스터 값 복사
+                    if (!Attack[j].HitMonsters.Contains(targetMonster)) //이 몬스터가 맞은기록에 없는 몬스터인가?
+                    {
+                        //몹과 몬스터를 정사각형으로 지정
+                        RectangleF attackRect = new RectangleF((float)Attack[j].x, (float)Attack[j].y, (float)Attack[j].size, (float)Attack[j].size);
+                        RectangleF monsterRect = new RectangleF((float)monsters[i].x, (float)monsters[i].y, monsters[i].size_x, monsters[i].size_y);
 
-                    if (monsterRect.IntersectsWith(attackRect))//몬스터와, 공격의 사각형이 서로 닿았을 경우
-                    {
-                        monsters[i] -= my;//데미지 계산은 무기공격력 + 유저 공격력이다
-                    }
-                    if (monsters[i].hp <= 0)//체력이 0 이하로 떨어졌을 경우 삭제한다
-                    {
-                        drop_item(monsters[i]);//몬스터 드랍아이템
-                        score += monsters[i].exp_type + 1;
-                        monsters.RemoveAt(i); //삭제
+                        if (monsterRect.IntersectsWith(attackRect))//몬스터와, 공격의 사각형이 서로 닿았을 경우
+                        {
+                            monsters[i] -= my;//데미지 계산은 무기공격력 + 유저 공격력이다
+                            Attack[j].HitMonsters.Add(targetMonster); // 맞았으면 맞은 기록에 추가
+                        }
+                        if (monsters[i].hp <= 0)//체력이 0 이하로 떨어졌을 경우 삭제한다
+                        {
+                            drop_item(monsters[i]);//몬스터 드랍아이템
+                            score += monsters[i].exp_type + 1;
+                            monsters.RemoveAt(i); //삭제
                         
-                        kill_count++;
+                            kill_count++;
+                        }
                     }
+                    
                 }
             }
         }

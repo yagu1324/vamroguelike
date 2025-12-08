@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="coordinate.cs" />
     <Compile Include="End.cs">
       <SubType>Form</SubType>
     </Compile>

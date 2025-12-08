@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace vamroguelike
 {
-    public class Item
+    public class Item:coordinate
     {
         //소환될 x,y좌표
         public double x { get; set; } 

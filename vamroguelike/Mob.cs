@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace vamroguelike
 {
-    public abstract class Mob //추상클래스
+    public abstract class Mob:coordinate //추상클래스
     {
         //아바타의 x,y위치
         public double x { get; set; } 
